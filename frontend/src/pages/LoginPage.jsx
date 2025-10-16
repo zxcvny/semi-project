@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import '../styles/Login.css';
+import { Link } from "react-router-dom";
+import { PiHandHeartFill } from "react-icons/pi";
+import '../styles/LoginPage.css';
 
 import {
   FaArrowLeft,
@@ -10,9 +12,6 @@ import {
   FaFacebook,
 } from 'react-icons/fa';
 import { RiKakaoTalkFill } from 'react-icons/ri';
-
-// 로고 이미지는 public 폴더에 있다고 가정합니다.
-const logoUrl = '/logo.png'; 
 
 // --- [개선점 1] 입력 필드 컴포넌트 분리 ---
 // 반복되는 입력 필드 UI를 별도의 컴포넌트로 만들어 코드를 간결하게 합니다.
@@ -79,14 +78,14 @@ const Login = () => {
   return (
     <div className="login-page">
       <div className="back-link">
-        <FaArrowLeft /> 뒤로가기
+        <Link to="/" className='link-to'><FaArrowLeft /> 뒤로가기</Link>
       </div>
 
       <div className="login-container">
         <div className="login-header">
-          <img src={logoUrl} alt="앱 로고" className="app-logo" />
+          <Link to="/" className="link-to"><PiHandHeartFill className="logo-icon" /></Link>
           <h1>로그인</h1>
-          <p>중고장터 계정으로 로그인하세요</p>
+          <p>내놔요 계정으로 로그인하세요</p>
         </div>
 
         <form onSubmit={handleSubmit} className="login-form">
