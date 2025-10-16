@@ -1,4 +1,5 @@
 import '../../styles/Header.css'
+import { Link } from 'react-router-dom';
 
 const Header = () => {
   return (
@@ -13,7 +14,9 @@ const Header = () => {
           />
         </div>
         <div className="header-right">
+          <Link to="/login">
           <button className="nav-button">로그인</button>
+          </Link>
           <button className="nav-button">회원가입</button>
           <button className="sell-button">+ 판매하기</button>
         </div>
