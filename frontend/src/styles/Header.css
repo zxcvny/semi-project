@@ -72,8 +72,7 @@
     padding-left: 45px;
     margin-left: 100px;
     border-radius: 10px;
-    border: 1px solid #ced4da;
-    background-color: #f3f3f5;
+    border: 1px solid #dfe0df;
     width: 400px;
 }
 
@@ -91,10 +90,11 @@
 }
 
 .sell-button {
-    background-color: #212529;
+    background-color: #4d4637;
     color: white;
     border: none;
     border-radius: 4px;
     padding: 8px 16px;
     cursor: pointer;
+    font-weight: bold;
 }
