@@ -22,19 +22,36 @@
 }
 
 .logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .logo-icon {
-    font-size: 2rem;
+  font-size: 2.3rem;
+  color: #FACC15; /* 생동감 있는 옐로우 */
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* 통통 튀는 효과 */
+}
+
+/* 아이콘에 마우스를 올리면 통통 튀는 효과 */
+.logo:hover .logo-icon {
+  transform: scale(1.2) rotate(-15deg);
+}
+
+.link-to {
+  text-decoration: none;
 }
 
 .logo-text {
-    font-family: "Black Han Sans", sans-serif;
-    font-size: 2rem;
-    font-weight: 400;
+  font-family: "Black Han Sans", sans-serif;
+  font-size: 2.2rem;
+  font-weight: 400;
+  
+  /* 텍스트에 그라디언트 적용 */
+  background: linear-gradient(45deg, #FFD700, #F59E0B);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent; /* 텍스트 색상을 투명하게 하여 그라디언트가 보이게 함 */
 }
 
 .search-container {
