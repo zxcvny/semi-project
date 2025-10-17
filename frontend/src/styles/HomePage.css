@@ -6,10 +6,11 @@
     display: flex;
     justify-content: center;
     text-align: center;
-    gap: 30px;
+    gap: 15px;
     border-bottom: 1px solid #e9ecef;
     padding: 30px 0px;
     background-color: white;
+    flex-wrap: wrap;
 }
 
 .category-item {

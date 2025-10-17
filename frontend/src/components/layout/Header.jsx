@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { CiSearch } from "react-icons/ci";
 import { PiHandHeartFill } from "react-icons/pi";
+import { GoPerson, GoPlus  } from "react-icons/go";
 import '../../styles/Header.css'
 
 const Header = () => {
@@ -20,11 +21,23 @@ const Header = () => {
           </div>
         </div>
         <div className="header-right">
-          <Link to="/login">
-          <button className="nav-button">로그인</button>
-          </Link>
-          <button className="nav-button signup">회원가입</button>
-          <button className="sell-button">+ 판매하기</button>
+          {/* 기본 */}
+          <div className="header-buttons">
+            <Link to="/login">
+            <button className="nav-button">로그인</button>
+            </Link>
+            <button className="nav-button signup">회원가입</button>
+            <button className="sell-button">+ 판매하기</button>
+          </div>
+        </div>
+        {/* 화면 줄였을 때 */}
+        <div className="header-icons">
+            <Link to="/login" className="icon-button">
+              <GoPerson />
+            </Link>
+            <button className="icon-button plus-button">
+              <GoPlus />
+            </button>
         </div>
       </div>
     </header>

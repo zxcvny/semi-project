@@ -25,9 +25,6 @@ SessionLocal = sessionmaker(autocommit=False,
 
 Base = declarative_base()
 
-def create_tables():
-    Base.matadata.create_all(bind=engine)
-
 def get_db():
     db = SessionLocal()
     try:
