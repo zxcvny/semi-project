@@ -1,0 +1,66 @@
+.product-card {
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.product-image-container {
+  width: 100%;
+  padding-top: 100%; /* 1:1 비율 */
+  position: relative;
+}
+
+.product-image-container img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 이미지가 컨테이너에 꽉 차도록 설정 */
+}
+
+.product-details {
+  padding: 16px;
+}
+
+.product-title {
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0 0 8px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.product-price {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0 0 8px 0;
+}
+
+.product-location {
+  font-size: 14px;
+  color: #868e96;
+  margin: 0 0 12px 0;
+}
+
+.product-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: #868e96;
+}
+
+.product-meta span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
