@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage';
+import SellPage from './pages/SellPage'
 import './styles/App.css'
 
 function App() {
@@ -10,6 +11,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/sell" element={<SellPage />} />
       </Routes>
     </BrowserRouter>
     </>

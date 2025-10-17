@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import Header from '../components/layout/Header'
 import '../styles/HomePage.css';
-// import ProductList from '../features/products/components/ProductList'
+import ProductList from '../features/products/components/ProductList'
 
 import { FiSmartphone, FiHeadphones, FiWatch } from 'react-icons/fi';
 import { FaComputer } from 'react-icons/fa6';
@@ -70,6 +70,7 @@ const HomePage = () => {
                         })}
                     </nav>
                 </div>
+                <ProductList />
             </div>
         </div>
     )
