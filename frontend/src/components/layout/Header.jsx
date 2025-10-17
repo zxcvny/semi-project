@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { CiSearch } from "react-icons/ci";
+import { IoSearchOutline } from "react-icons/io5";
 import { PiHandHeartFill } from "react-icons/pi";
 import { GoPerson, GoPlus  } from "react-icons/go";
 import '../../styles/Header.css'
@@ -8,36 +8,42 @@ const Header = () => {
   return (
     <header className="app-header">
       <div className="header-container">
+        {/* 로고 */}
         <div className="header-left">
-          <div className="logo">
-            <PiHandHeartFill className="logo-icon" />
-            <Link to="/" className="link-to"><h1 className="logo-text">내놔요</h1></Link>
-          </div>
+          <Link to="/" className="link-to">
+            <div className="logo-container">
+              <PiHandHeartFill className="logo-icon"/>
+              <h1 className="logo-text">내놔요</h1>
+            </div>
+          </Link>
         </div>
+        {/* 검색창 */}
+        {/* 검색 결과 표시 창 만들어야 함 */}
         <div className="header-middle">
           <div className="search-container">
-            <CiSearch className="search-icon"/>
-            <input type="text" className='search-bar' placeholder='상품을 검색해보세요' />
+            <IoSearchOutline  className="search-icon"/>
+            <input
+            type="text"
+            className="search-input"
+            placeholder="찾으시는 상품이 무엇인가요?"
+            />
           </div>
         </div>
+        {/* 로그인, 회원가입, 판매하기 버튼 */}
+        {/* 로그인 상태에 따라 변화해야 함 (로그아웃, 내정보, 판매하기) */}
+        {/* 화면 상태에 따라 요소 변화 */}
         <div className="header-right">
-          {/* 기본 */}
-          <div className="header-buttons">
-            <Link to="/login">
-            <button className="nav-button">로그인</button>
-            </Link>
-            <button className="nav-button signup">회원가입</button>
-            <button className="sell-button">+ 판매하기</button>
+          {/* 전체 화면 */}
+          <div className="btn-container-full">
+            <Link to="/login" className="link-to header-login-btn">로그인</Link>
+            <Link to="/signup" className="link-to header-signup-btn">회원가입</Link>
+            <Link to="/sell" className="link-to header-sell-btn">+ 판매하기</Link>
           </div>
-        </div>
-        {/* 화면 줄였을 때 */}
-        <div className="header-icons">
-            <Link to="/login" className="icon-button">
-              <GoPerson />
-            </Link>
-            <button className="icon-button plus-button">
-              <GoPlus />
-            </button>
+          {/* 화면이 작아질 때 아이콘으로 변경 */}
+          <div className="btn-container-media">
+            <Link to="/login" className="link-to header-login-icon"><GoPerson /></Link>
+            <Link to="/sell" className="link-to header-sell-icon"><GoPlus /></Link>
+          </div>
         </div>
       </div>
     </header>

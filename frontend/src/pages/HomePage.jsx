@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import Header from '../components/layout/Header'
 import '../styles/HomePage.css';
 // import ProductList from '../features/products/components/ProductList'
@@ -54,17 +55,17 @@ const HomePage = () => {
         <div className="App">
             <Header /> {/* 고정 헤더 */}
             <div className="main-content">
-                <div className="container">
+                <div className="category-container">
                     <nav className="category-nav">
                         {categories.map(cat => {
                             const IconComponent = categoryIcons[cat.name] || categoryIcons.default;
                             return (
-                                <div key={cat.category_id} className="category-item">
+                                <Link to={`/category/${cat.name}`} key={cat.category_id} className="link-to category-item">
                                     <div className="category-icon-wrapper">
-                                        <IconComponent />
+                                        <IconComponent className="category-icon" />
                                     </div>
-                                    <span>{cat.name}</span>
-                                </div>
+                                    <span className="category-name">{cat.name}</span>
+                                </Link>
                             );
                         })}
                     </nav>
