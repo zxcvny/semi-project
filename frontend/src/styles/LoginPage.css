@@ -84,6 +84,17 @@
   color: #fac608;
 }
 
+.login-input-wrapper.has-error input {
+  border-color: #cda291;
+}
+
+.error-message {
+  color: #cda291;
+  font-size: 13px;
+  margin-top: 6px;
+  margin-left: 4px;
+}
+
 .password-toggle-btn {
   position: absolute;
   right: 12px;

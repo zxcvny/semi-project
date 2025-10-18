@@ -1,7 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from api.endpoints import categories
+from api.endpoints import categories, users
 
 app = FastAPI()
 
@@ -14,6 +14,7 @@ app.add_middleware(
 )
 
 app.include_router(categories.router, prefix="/api", tags=["Categories"])
+app.include_router(users.router, prefix="/api", tags=["Users"])
 
 @app.get("/")
 def read_root():

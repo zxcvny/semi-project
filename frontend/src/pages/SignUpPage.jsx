@@ -11,14 +11,15 @@ import { RiKakaoTalkFill } from "react-icons/ri";
 import "../styles/SignUpPage.css"
 
 // 반복되는 입력 필드 컴포넌트 분리, 로그인 필드 사용
-const InputField = ({id, label, icon, children, ...props}) => (
+const InputField = ({id, label, icon, error, children, ...props}) => (
   <div className="login-input-group">
     <label htmlFor={id}>{label}</label>
-    <div className="login-input-wrapper">
+    <div className={`login-input-wrapper ${error ? 'has-error' : ''}`}>
       {icon}
       <input id={id} {...props} />
       {children}
     </div>
+    {error && <p className="error-message">{error}</p>}
   </div>
 );
 
@@ -30,6 +31,9 @@ const SignUpPage = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [nickname, setNickName] = useState('');
     const [loading, setLoading] = useState(false);
+    const [errors, setErrors] = useState({});
+
+    const navigate = useNavigate();
 
     const togglePassword = () => {
         setIsPasswordVisible((prev) => !prev)
@@ -41,10 +45,50 @@ const SignUpPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setErrors({});
+
+        if (password.length < 6) {
+            setErrors(prev => ({ ...prev, password: "비밀번호는 6자 이상이어야 합니다." }));
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            setErrors(prev => ({ ...prev, confirmPassword: "비밀번호가 일치하지 않습니다." }));
+            return;
+        }
+
         setLoading(true);
+
+        try {
+            const response = await fetch('http://127.0.0.1:8000/api/users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password, nickname })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                if (errorData.detail.includes("이메일")) {
+                    setErrors(prev => ({ ...prev, email: errorData.detail }));
+                } else if (errorData.detail.includes("닉네임")) {
+                    setErrors(prev => ({ ...prev, nickname: errorData.detail }));
+                } else {
+                    setErrors(prev => ({ ...prev, form: errorData.detail || '회원가입에 실패했습니다.' }));
+                }
+                return;
+            }
+
+            alert('회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.');
+            navigate('/login');
+        } catch (err) {
+            setErrors({ form: "서버와 통신 중 오류가 발생했습니다." });
+        } finally {
+            setLoading(false);
+        }
     }
 
-    const navigate = useNavigate();
     return (
         <div className="app-signup">
             <div className="signup-wrapper">
@@ -69,6 +113,7 @@ const SignUpPage = () => {
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="이메일"
                             icon={<FaEnvelope className="email-icon" />}
+                            error={errors.email}
                             required
                         />
                         {/* 비밀번호 입력 필드 + 비밀번호 표시 버튼 */}
@@ -80,6 +125,7 @@ const SignUpPage = () => {
                             onChange={(e) => setPassword(e.target.value)}
                             placeholder="비밀번호"
                             icon={<FaLock className="password-icon"/>}
+                            error={errors.password}
                             required
                         >
                             <button
@@ -99,6 +145,7 @@ const SignUpPage = () => {
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             placeholder="비밀번호 확인"
                             icon={<FaLock className="password-icon"/>}
+                            error={errors.confirmPassword}
                             required
                         >
                             <button
@@ -118,6 +165,7 @@ const SignUpPage = () => {
                             onChange={(e) => setNickName(e.target.value)}
                             placeholder="사용하실 닉네임을 입력해주세요"
                             icon={<GoPerson className="email-icon" />}
+                            error={errors.nickname}
                             required
                         />
                         {/* 이용약관 */}
