@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import Header from '../components/layout/Header'
+import { useState, useEffect } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import Header from '../components/layout/Header';
 import '../styles/HomePage.css';
-import ProductList from '../features/products/components/ProductList'
+import ProductList from '../features/products/components/ProductList';
 
 import { FiSmartphone, FiHeadphones, FiWatch } from 'react-icons/fi';
 import { FaComputer } from 'react-icons/fa6';
@@ -26,6 +26,7 @@ const categoryIcons = {
 const HomePage = ({ user, handleLogout }) => {
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
+    const { categoryName } = useParams();
 
     useEffect(() => {
         fetch('http://127.0.0.1:8000/api/categories')
@@ -60,7 +61,7 @@ const HomePage = ({ user, handleLogout }) => {
                         {categories.map(cat => {
                             const IconComponent = categoryIcons[cat.name] || categoryIcons.default;
                             return (
-                                <Link to={`/category/${cat.name}`} key={cat.category_id} className="link-to category-item">
+                                <Link to={`/category/${encodeURIComponent(cat.name)}`} key={cat.category_id} className="link-to category-item">
                                     <div className="category-icon-wrapper">
                                         <IconComponent className="category-icon" />
                                     </div>
@@ -70,7 +71,7 @@ const HomePage = ({ user, handleLogout }) => {
                         })}
                     </nav>
                 </div>
-                <ProductList />
+                <ProductList categoryName={categoryName} />
             </div>
         </div>
     )

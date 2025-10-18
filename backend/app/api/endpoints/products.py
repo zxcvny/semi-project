@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
+from urllib.parse import unquote # unquote 함수를 import 합니다.
 
 from schemas import product as product_schema
-from models import product as product_model
+from models import product as product_model, category as category_model
 from database.database import get_db
 
 router = APIRouter()
@@ -40,13 +41,20 @@ def create_product(product: product_schema.ProductCreate, db: Session = Depends(
     return db_product
 
 @router.get("/products", response_model=List[product_schema.Product])
-def read_products(sort: str = "latest", db: Session = Depends(get_db)):
+def read_products(sort: str = "latest", category: Optional[str] = None, db: Session = Depends(get_db)):
     """
-    모든 상품 목록 조회
+    모든 상품 목록 조회 (카테고리별 필터링 가능)
     """
+    query = db.query(product_model.Product)
+
+    if category:
+        # URL 디코딩을 수행합니다.
+        decoded_category = unquote(category)
+        query = query.join(category_model.Category).filter(category_model.Category.name == decoded_category)
+
     if sort == "latest":
-        products = db.query(product_model.Product).order_by(product_model.Product.created_at.desc()).all()
+        products = query.order_by(product_model.Product.created_at.desc()).all()
     else:
-        products = db.query(product_model.Product).all()
+        products = query.all()
         
     return products
