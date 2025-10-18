@@ -45,6 +45,7 @@ class ProductBase(BaseModel):
 
 class ProductCreate(ProductBase):
     # 상품 생성 시에는 이미지 URL 리스트를 함께 받음
+    seller_id: int
     images: List[ProductImageCreate] = []
 
 
