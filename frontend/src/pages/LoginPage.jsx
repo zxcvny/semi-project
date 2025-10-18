@@ -18,6 +18,7 @@ const InputField = ({id, label, icon, error, children, ...props}) => (
       <input id={id} {...props} />
       {children}
     </div>
+    {error && <p className="error-message">{error}</p>}
   </div>
 );
 
@@ -26,14 +27,14 @@ const LoginPage = ({ handleLogin }) => {
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState({});
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setErrors({});
 
     try {
       const response = await fetch('http://127.0.0.1:8000/api/login', {
@@ -44,17 +45,31 @@ const LoginPage = ({ handleLogin }) => {
         body: JSON.stringify({ email, password }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        const errorMessage = (errorData & errorData.detail) ? errorData.detail : '로그인에 실패했습니다.'
-        throw new Error(errorMessage);
+        let errorMessage = "로그인에 실패했습니다.";
+        if (Array.isArray(data.detail)) {
+            errorMessage = data.detail[0].msg; 
+        } else {
+            errorMessage = data.detail;
+        }
+
+        if (errorMessage.includes("이메일") || errorMessage.includes("email")) {
+            setErrors(prev => ({ ...prev, email: "존재하지 않는 이메일입니다." }));
+        } else if (errorMessage.includes("비밀번호")) {
+            setErrors(prev => ({ ...prev, password: errorMessage }));
+        } else {
+            setErrors(prev => ({ ...prev, form: errorMessage }));
+        }
+        return;
       }
 
-      const userData = await response.json();
-      localStorage.setItem('user', JSON.stringify(userData));
+      handleLogin(data);
       navigate('/');
+      
     } catch (err) {
-      setError(err.message);
+      setErrors({ form: "서버와 통신 중 오류가 발생했습니다." });
     } finally {
       setLoading(false);
     }
@@ -88,7 +103,7 @@ const LoginPage = ({ handleLogin }) => {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="이메일"
               icon={<FaEnvelope className="email-icon" />}
-              error={error}
+              error={errors.email}
               required
             />
             {/* 비밀번호 입력 필드 + 비밀번호 표시 버튼 */}
@@ -100,7 +115,7 @@ const LoginPage = ({ handleLogin }) => {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="비밀번호"
               icon={<FaLock className="password-icon"/>}
-              error={error}
+              error={errors.password}
               required
             >
               <button
@@ -121,7 +136,7 @@ const LoginPage = ({ handleLogin }) => {
               </label>
               <a href="#" className="find-password-link link-to">비밀번호 찾기</a> {/* 기능 X */}
             </div>
-            {error && <p className="error-message">{error}</p>}
+            {errors.form && <p className="error-message">{errors.form}</p>}
             {/* 로그인 버튼 */}
             <button type="submit" className="login-btn" disabled={loading}>
               {loading ? '로그인 중...' : '로그인'}

@@ -25,6 +25,8 @@ def create_user(user: user_schema.UserCreate, db: Session = Depends(get_db)):
 @router.post("/login", response_model=user_schema.UserResponse)
 def login_user(user: user_schema.UserLogin, db: Session = Depends(get_db)):
     db_user = db.query(user_model.User).filter(user_model.User.email == user.email).first()
-    if not db_user or db_user.password != user.password:
-        raise HTTPException(status_code=401, detail="이메일 또는 비밀번호가 올바르지 않습니다.")
+    if not db_user:
+        raise HTTPException(status_code=404, detail="존재하지 않는 이메일입니다.")
+    if db_user.password != user.password:
+        raise HTTPException(status_code=401, detail="비밀번호가 일치하지 않습니다.")
     return db_user
