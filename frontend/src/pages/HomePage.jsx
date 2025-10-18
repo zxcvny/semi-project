@@ -9,7 +9,7 @@ import { FaComputer } from 'react-icons/fa6';
 import { FaCameraRetro } from 'react-icons/fa';
 import { RiSofaLine, RiShoppingBag4Line } from 'react-icons/ri';
 import { LiaBicycleSolid } from 'react-icons/lia';
-import { MdHelpOutline } from 'react-icons/md'; // 기본값으로 쓸 아이콘
+import { MdHelpOutline } from 'react-icons/md';
 
 const categoryIcons = {
     '디지털기기': FiSmartphone,
@@ -20,10 +20,10 @@ const categoryIcons = {
     '패션/잡화': RiShoppingBag4Line,
     '오디오': FiHeadphones,
     '시계/쥬얼리': FiWatch,
-    'default': MdHelpOutline // 혹시 일치하는 이름이 없을 경우 보여줄 기본 아이콘
+    'default': MdHelpOutline
 };
 
-const HomePage = () => {
+const HomePage = ({ user, handleLogout }) => {
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -43,7 +43,7 @@ const HomePage = () => {
     if (loading) {
         return (
             <>
-                <Header />
+                <Header user={user} handleLogout={handleLogout}/>
                 <div className="main-content">
                     <div>로딩 중 ...</div>
                 </div>
@@ -53,7 +53,7 @@ const HomePage = () => {
 
     return(
         <div className="app">
-            <Header /> {/* 고정 헤더 */}
+            <Header user={user} handleLogout={handleLogout} /> {/* 고정 헤더 */}
             <div className="main-content">
                 <div className="category-container">
                     <nav className="category-nav">

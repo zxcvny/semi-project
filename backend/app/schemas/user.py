@@ -5,6 +5,10 @@ class UserCreate(BaseModel):
     password: str = Field(..., min_length=6)
     nickname: str
 
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
 class UserResponse(BaseModel):
     user_id: int
     email: EmailStr

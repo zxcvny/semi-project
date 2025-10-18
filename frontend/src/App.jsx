@@ -1,17 +1,39 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import HomePage from './pages/HomePage'
+import { useState, useEffect } from 'react';
+
+import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
-import SellPage from './pages/SellPage'
-import './styles/App.css'
+import SellPage from './pages/SellPage';
+
+import './styles/App.css';
 
 function App() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+  const handleLogin = (loggedInUser) => {
+    setUser(loggedInUser);
+    localStorage.setItem('user', JSON.stringify(loggedInUser));
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    localStorage.removeItem('user');
+  };
+
   return (
     <>
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage />} />
+        <Route path="/" element={<HomePage user={user} handleLogout={handleLogout} />} />
+        <Route path="/login" element={<LoginPage handleLogin={handleLogin} />} />
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/sell" element={<SellPage />} />
       </Routes>

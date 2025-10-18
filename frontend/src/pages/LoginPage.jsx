@@ -10,10 +10,10 @@ import { RiKakaoTalkFill } from "react-icons/ri";
 import "../styles/LoginPage.css"
 
 // 반복되는 입력 필드 컴포넌트 분리
-const InputField = ({id, label, icon, children, ...props}) => (
+const InputField = ({id, label, icon, error, children, ...props}) => (
   <div className="login-input-group">
     <label htmlFor={id}>{label}</label>
-    <div className="login-input-wrapper">
+    <div className={`login-input-wrapper ${error ? 'has-error' : ''}`}>
       {icon}
       <input id={id} {...props} />
       {children}
@@ -21,22 +21,49 @@ const InputField = ({id, label, icon, children, ...props}) => (
   </div>
 );
 
-const LoginPage = () => {
+const LoginPage = ({ handleLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        const errorMessage = (errorData & errorData.detail) ? errorData.detail : '로그인에 실패했습니다.'
+        throw new Error(errorMessage);
+      }
+
+      const userData = await response.json();
+      localStorage.setItem('user', JSON.stringify(userData));
+      navigate('/');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   }
 
   const togglePassword = () => {
     setIsPasswordVisible((prev) => !prev)
   }
 
-  const navigate = useNavigate(); // 뒤로가기
   return (
     <div className="app-login">
       <div className="login-wrapper">
@@ -61,6 +88,7 @@ const LoginPage = () => {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="이메일"
               icon={<FaEnvelope className="email-icon" />}
+              error={error}
               required
             />
             {/* 비밀번호 입력 필드 + 비밀번호 표시 버튼 */}
@@ -72,6 +100,7 @@ const LoginPage = () => {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="비밀번호"
               icon={<FaLock className="password-icon"/>}
+              error={error}
               required
             >
               <button
@@ -92,6 +121,7 @@ const LoginPage = () => {
               </label>
               <a href="#" className="find-password-link link-to">비밀번호 찾기</a> {/* 기능 X */}
             </div>
+            {error && <p className="error-message">{error}</p>}
             {/* 로그인 버튼 */}
             <button type="submit" className="login-btn" disabled={loading}>
               {loading ? '로그인 중...' : '로그인'}

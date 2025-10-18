@@ -126,3 +126,74 @@
     display: flex;
   }
 }
+
+/* 로그인 상태 */
+.user-menu-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nickname-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding-bottom: 12px;
+  margin-bottom: -12px;
+}
+
+.user-nickname {
+  margin: 0;
+  margin-right: 30px;
+}
+
+.user-nickname span {
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.user-nickname span:hover {
+  text-decoration: underline;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  background-color: white;
+  min-width: 100px;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  z-index: 1001;
+  padding: 8px 0;
+}
+
+.dropdown-item {
+  padding: 10px 20px;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  display: block;
+  text-decoration: none;
+}
+
+.dropdown-item.logout {
+  color: #c0564b;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+.user-menu-media {
+  display: none;
+}
+
+@media (max-width: 880px) {
+  .user-menu-container {
+    display: none;
+  }
+  .user-menu-media {
+    display: flex;
+  }
+}
