@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import { FaArrowLeft } from "react-icons/fa6";
+import { MdHome } from "react-icons/md";
 import { PiHandHeartFill } from "react-icons/pi";
 import { FaEnvelope, FaLock, FaEyeSlash, FaEye } from "react-icons/fa";
 import { GoPerson } from "react-icons/go";
@@ -94,7 +94,7 @@ const SignUpPage = () => {
             <div className="signup-wrapper">
                 <div className="back-link">
                     <button onClick={() => navigate(-1)} className="back-btn">
-                        <FaArrowLeft className="back-icon"/>뒤로가기
+                        <MdHome className="back-icon"/>메인 페이지로 가기
                     </button>
                 </div>
                 <div className="signup-container">

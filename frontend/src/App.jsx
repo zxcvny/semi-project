@@ -35,7 +35,7 @@ function App() {
         <Route path="/" element={<HomePage user={user} handleLogout={handleLogout} />} />
         <Route path="/login" element={<LoginPage handleLogin={handleLogin} />} />
         <Route path="/signup" element={<SignUpPage />} />
-        <Route path="/sell" element={<SellPage />} />
+        <Route path="/sell" element={<SellPage user={user} handleLogout={handleLogout} />} />
       </Routes>
     </BrowserRouter>
     </>
