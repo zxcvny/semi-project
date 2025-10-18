@@ -10,12 +10,14 @@ import './styles/App.css';
 
 function App() {
   const [user, setUser] = useState(null);
+  const [isAuthReady, setIsAuthReady] = useState(false);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
+    setIsAuthReady(true);
   }, []);
 
   const handleLogin = (loggedInUser) => {
@@ -35,7 +37,7 @@ function App() {
         <Route path="/" element={<HomePage user={user} handleLogout={handleLogout} />} />
         <Route path="/login" element={<LoginPage handleLogin={handleLogin} />} />
         <Route path="/signup" element={<SignUpPage />} />
-        <Route path="/sell" element={<SellPage user={user} handleLogout={handleLogout} />} />
+        <Route path="/sell" element={<SellPage user={user} handleLogout={handleLogout} isAuthReady={isAuthReady} />} />
       </Routes>
     </BrowserRouter>
     </>
