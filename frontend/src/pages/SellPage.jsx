@@ -69,6 +69,23 @@ const SellPage = ({ user, handleLogout, isAuthReady }) => {
     }
   }, [tag]);
 
+  useEffect(() => {
+    const hasUnsavedChanges = title || price > 0 || content || images.length > 0;
+
+    const handleBeforeUnload = (e) => {
+      if (hasUnsavedChanges) {
+        e.preventDefault();
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    // 컴포넌트가 언마운트될 때 이벤트 리스너 제거
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [title, price, content, images]);
+
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     if (images.length + files.length > 3) {
@@ -112,7 +129,7 @@ const SellPage = ({ user, handleLogout, isAuthReady }) => {
     setLoading(true);
 
     try {
-      // --- 🚀 1. 이미지 업로드 단계 ---
+      // --- 이미지 업로드 단계 ---
       const formData = new FormData();
       images.forEach(image => {
         formData.append('files', image);
@@ -129,10 +146,9 @@ const SellPage = ({ user, handleLogout, isAuthReady }) => {
 
       const { image_urls } = await imageUploadResponse.json();
 
-      // --- 🚀 2. 상품 정보 등록 단계 ---
+      // --- 상품 정보 등록 단계 ---
       const productData = {
         seller_id: user.user_id,
-        // 👇 [수정] 업로드 후 받은 URL 목록을 images 필드에 할당
         images: image_urls.map((url, index) => ({ image_url: url, image_order: index })),
         title: title,
         category_id: Number(categoryId),
@@ -261,7 +277,6 @@ const SellPage = ({ user, handleLogout, isAuthReady }) => {
                   disabled={tag === '무료나눔'} // '무료나눔' 선택 시 비활성화
                   required
                 />
-                원
               </div>
               <div className="sell-input-group">
                 <label htmlFor="location">거래 희망 지역</label>

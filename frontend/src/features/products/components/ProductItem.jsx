@@ -27,12 +27,16 @@ const formatPrice = (price) => {
 }
 
 const ProductItem = ({ product }) => {
+  // 대표 이미지 URL을 가져옵니다. 이미지가 없으면 기본 이미지를 사용합니다.
+  const imageUrl = product.images && product.images.length > 0
+    ? `http://127.0.0.1:8000${product.images[0].image_url}`
+    : 'https://via.placeholder.com/250';
+
   return (
     <div className="product-card">
       <Link to={`/products/${product.product_id}`} className="link-to">
         <div className="product-image-container">
-          {/* product.image_url은 상품 데이터에 이미지 주소가 있다고 가정합니다. */}
-          <img src={product.image_url || 'https://via.placeholder.com/250'} alt={product.title} />
+          <img src={imageUrl} alt={product.title} />
         </div>
         <div className="product-details">
           <h4 className="product-title">{product.title}</h4>

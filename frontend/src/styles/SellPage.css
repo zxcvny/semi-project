@@ -129,3 +129,112 @@
 .remove-image-btn:hover {
     background-color: rgba(0, 0, 0, 0.8);
 }
+
+/* 폼 요소 */
+.sell-input-group {
+  margin-bottom: 25px;
+}
+
+.sell-input-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.sell-input-group input[type="text"],
+.sell-input-group input[type="number"],
+.sell-input-group textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #dfe0df;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.2s ease-in-out;
+    box-sizing: border-box;
+}
+
+.sell-input-group textarea {
+    font-family: "Chiron GoRound TC", sans-serif;
+}
+
+.sell-input-group select {
+    width: 100%;
+    padding: 12px 40px 12px 16px;
+    border: 2px solid #dfe0df;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.2s ease-in-out;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.7rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+}
+
+.sell-input-group input:focus,
+.sell-input-group select:focus,
+.sell-input-group textarea:focus {
+    outline: none;
+    border-color: #fac608;
+}
+
+.tag-radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.tag-radio-group .radio-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 15px;
+    border: 2px solid #dfe0df;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tag-radio-group input[type="radio"] {
+    display: none;
+}
+
+.tag-radio-group input[type="radio"]:checked + span {
+    font-weight: bold;
+}
+
+.tag-radio-group .radio-label:has(input:checked) {
+    border-color: #fac608;
+    background-color: #fffbeb;
+}
+
+.location-select-group {
+    display: flex;
+    gap: 10px;
+}
+
+.sell-btn {
+    width: 100%;
+    padding: 18px;
+    border: none;
+    border-radius: 8px;
+    background-color: #fac608;
+    color: #333;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-top: 20px;
+}
+
+.sell-btn:hover {
+    background-color: #ffbf51;
+}
+
+.sell-btn:disabled {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+}
