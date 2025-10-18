@@ -1,96 +1,87 @@
-.login-page {
+.app-login, .app-signup {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
   padding: 20px;
-  box-sizing: border-box;
-  position: relative;
 }
 
-.back-link {
-  position: absolute;
-  top: 40px;
-  left: 40px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #555;
+.back-btn {
   cursor: pointer;
-  font-size: 16px;
+  border: none;
+  font-size: 14px;
+  background: none;
+  margin-bottom: 10px;
 }
 
-.login-container {
+.back-icon {
+  margin-right: 10px;
+}
+
+.login-container, .signup-container {
   background-color: white;
-  padding: 40px;
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 40px;
   width: 100%;
-  max-width: 400px;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.login-header {
+.login-header, .signup-header {
   text-align: center;
-  margin-bottom: 30px;
 }
 
-.login-header h1 {
-  font-size: 24px;
-  font-weight: 700;
-  margin: 0 0 8px 0;
+.login-header p, .signup-header p {
+  color: grey;
 }
 
-.login-header p {
-  color: #6c757d;
-  font-size: 16px;
-  margin: 0;
-}
-
-.login-form {
+.login-form, .signup-form {
   width: 100%;
 }
 
-.input-group {
+.login-input-group {
   margin-bottom: 20px;
 }
 
-.input-group label {
+.login-input-group label {
   display: block;
   font-size: 14px;
   font-weight: 500;
   margin-bottom: 8px;
 }
 
-.input-wrapper {
+.login-input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
 }
 
-.input-wrapper .input-icon {
+.login-input-wrapper .email-icon, .password-icon {
   position: absolute;
   left: 16px;
-  color: #adb5bd;
+  color: #dfe0df;
+  transition: color 0.2s ease-in-out;
 }
 
-.input-wrapper input {
+.login-input-wrapper input {
   width: 100%;
   padding: 14px 14px 14px 45px;
-  border: 1px solid #dee2e6;
+  border: 2px solid #dfe0df;
   border-radius: 8px;
-  background-color: #f8f9fa;
   font-size: 16px;
-  transition: border-color 0.2s;
-  box-sizing: border-box;
+  transition: border-color 0.2s ease-in-out;
 }
 
-.input-wrapper input:focus {
+.login-input-wrapper:focus-within input {
   outline: none;
-  border-color: #444;
+  border: 2px solid #fac608;
+}
+
+.login-input-wrapper:focus-within .email-icon,
+.login-input-wrapper:focus-within .password-icon {
+  color: #fac608;
 }
 
 .password-toggle-btn {
@@ -99,14 +90,13 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: #adb5bd;
+  color: #4e4637;
   font-size: 20px;
-  padding: 4px;
   display: flex;
   align-items: center;
 }
 
-.options-row {
+.login-option, .terms-option {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -114,44 +104,47 @@
   font-size: 14px;
 }
 
-.checkbox-label {
+.auto-login-label, .terms-label {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 3px;
   cursor: pointer;
-  color: #495057;
 }
 
-.find-password-link {
-  color: #495057;
-  text-decoration: none;
+.auto-login-label input, .terms-label input {
+  width: 15px;
+  height: 25px;
 }
-.find-password-link:hover {
+
+.auto-login-label input:checked, .terms-label input:checked {
+  accent-color: #fac608;
+}
+
+.find-password-link:hover, .signup-link-to:hover {
   text-decoration: underline;
 }
 
-.login-btn {
+.login-btn, .signup-btn {
   width: 100%;
   padding: 16px;
   border: none;
   border-radius: 8px;
-  background-color: #212529;
-  color: white;
+  background-color: #fac608;
+  color: #333;
   font-size: 16px;
-  font-weight: 700;
+  font-weight: bold;
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
 .login-btn:hover {
-  background-color: #343a40;
+  background-color: #ffbf51;
 }
 
 .divider {
   display: flex;
   align-items: center;
-  text-align: center;
-  color: #ced4da;
+  color: #333;
   margin: 30px 0;
   width: 100%;
 }
@@ -166,76 +159,66 @@
 .divider span {
   padding: 0 15px;
   font-size: 14px;
-  color: #adb5bd;
+  color: #333;
 }
 
 .social-login {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .social-btn {
   width: 100%;
   padding: 14px;
+  border: none;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  border: 1px solid #dee2e6;
-  background-color: #fff;
-  transition: background-color 0.2s;
 }
-.social-btn:hover {
-  background-color: #f8f9fa;
+
+.social-btn-icon {
+  font-size: 20px;
 }
 
 .social-btn.kakao {
-  background-color: #fee500;
-  border-color: #fee500;
-  color: #191919;
+  background-color: #fae100;
 }
+
 .social-btn.kakao:hover {
     background-color: #fdd835;
 }
 
-
-.social-btn.facebook {
-  color: #1877f2;
+.social-btn.google {
+  background-color: #FFFFFF;
+  border: 1px solid #E0E0E0;
+  color: #333333;
 }
 
-.signup-link {
+.social-btn.google:hover {
+  background-color: #F7F7F7; /* 마우스를 올렸을 때 살짝 어두워지는 효과 */
+}
+
+.signup-link, .login-link {
   margin-top: 30px;
   font-size: 14px;
-  color: #6c757d;
-}
-
-.signup-link a {
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  gap: 8px;
   color: #333;
-  font-weight: 700;
-  text-decoration: none;
-}
-.signup-link a:hover {
-    text-decoration: underline;
 }
 
-.help-btn {
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background-color: #212529;
-  color: white;
-  border: none;
-  font-size: 24px;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+.signup-link p, .login-link p{
+  margin: 0;
+}
+
+.signup-link-to, .login-link-to {
+  font-weight: bold;
 }

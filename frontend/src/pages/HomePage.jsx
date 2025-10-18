@@ -52,7 +52,7 @@ const HomePage = () => {
     }
 
     return(
-        <div className="App">
+        <div className="app">
             <Header /> {/* 고정 헤더 */}
             <div className="main-content">
                 <div className="category-container">
