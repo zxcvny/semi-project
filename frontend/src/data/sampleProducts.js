@@ -3,7 +3,10 @@ const sampleImages = [
     "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=2598&auto=format&fit=crop",
     "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=2670&auto=format&fit=crop",
     "https://images.unsplash.com/photo-1542291026-7eec264c27ab?q=80&w=2670&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?q=80&w=2671&auto=format&fit=crop"
+    "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?q=80&w=2671&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=600&h=600&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?q=80&w=600&h=600&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=600&h=600&auto=format&fit=crop",
 ];
 
 export const sampleProducts = [
@@ -60,5 +63,64 @@ export const sampleProducts = [
     "wishlist_count": 22,
     "created_at": new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // 1일 전
     "image_url": sampleImages[2]
-  }
+  },
+  {
+    "product_id": 1,
+    "title": "아이폰 14 Pro 256GB 실버",
+    "content": "상태 아주 좋습니다...",
+    "price": 950000,
+    "location": "서울 강남구",
+    "tag": "중고",
+    "status": "판매중",
+    "view_count": 120,
+    "wishlist_count": 24, // 인기순 정렬 기준
+    "created_at": new Date(Date.now() - 2 * 60 * 1000).toISOString(),
+    "seller": { "user_id": 101, "nickname": "강남멋쟁이" }, // 판매자 정보
+    "category": { "category_id": 1, "name": "디지털기기" }, // 카테고리 정보
+    "images": [
+        { "image_id": 101, "image_url": sampleImages[0], "image_order": 0 },
+        { "image_id": 102, "image_url": sampleImages[1], "image_order": 1 }
+    ]
+  },
+  {
+    "product_id": 2,
+    "title": "맥북 프로 16인치 M2 Pro",
+    // ... (content, price, etc.)
+    "wishlist_count": 48,
+    "created_at": new Date(Date.now() - 15 * 60 * 1000).toISOString(),
+    "seller": { "user_id": 102, "nickname": "애플매니아" },
+    "category": { "category_id": 2, "name": "컴퓨터" },
+    "images": [ { "image_id": 103, "image_url": sampleImages[2], "image_order": 0 } ]
+  },
+   { // 판매자 101의 다른 상품 추가
+    "product_id": 3,
+    "title": "로지텍 MX Master 3S",
+    "content": "사무용 마우스 끝판왕...",
+    "price": 100000,
+    "location": "서울 강남구",
+    "tag": "중고",
+    "status": "판매중",
+    "view_count": 80,
+    "wishlist_count": 15,
+    "created_at": new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
+    "seller": { "user_id": 101, "nickname": "강남멋쟁이" }, // 같은 판매자
+    "category": { "category_id": 2, "name": "컴퓨터" }, // 다른 카테고리
+    "images": [ { "image_id": 104, "image_url": sampleImages[1], "image_order": 0 } ]
+  },
+   { // 같은 카테고리(디지털기기)의 인기 상품 추가
+    "product_id": 4,
+    "title": "갤럭시 S23 Ultra 512GB",
+    "content": "미개봉 새상품입니다...",
+    "price": 1200000,
+    "location": "경기 수원시",
+    "tag": "미개봉",
+    "status": "판매중",
+    "view_count": 250,
+    "wishlist_count": 55, // 높은 wishlist_count
+    "created_at": new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
+    "seller": { "user_id": 103, "nickname": "삼성팬보이" }, // 다른 판매자
+    "category": { "category_id": 1, "name": "디지털기기" }, // 같은 카테고리
+    "images": [ { "image_id": 105, "image_url": sampleImages[0], "image_order": 0 } ]
+  },
 ];
+

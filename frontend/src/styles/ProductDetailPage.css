@@ -1,0 +1,293 @@
+/* '.main-content' 대신 '.product-detail-page'를 기준으로 상단 여백을 줍니다.
+  이러면 HomePage.css의 '.main-content'와 충돌하지 않습니다.
+*/
+.product-detail-page {
+    padding-top: 70px; /* 헤더 높이(93px) + 여백 */
+}
+
+/* 모든 선택자 앞에 .product-detail-page를 붙여
+  이 스타일이 다른 페이지(특히 헤더)에 영향을 주지 않도록 격리합니다.
+*/
+.product-detail-page .product-detail-container {
+    /* max-width: 1000px; */ /* 최대 너비 제한 제거 */
+    margin: 20px auto;
+    padding: 80px 40px; /* 좌우 패딩 추가 */
+    background-color: #fff;
+    border-radius: 16px; /* 모바일 반응형에서 조정될 수 있음 */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.product-detail-page .product-detail-layout {
+    display: flex; /* 레이아웃 핵심 */
+    gap: 40px;
+    max-width: 1200px; /* 내용 레이아웃 최대 너비 유지 (선택 사항) */
+    margin: 0 auto;   /* 내용 레이아웃 가운데 정렬 (선택 사항) */
+}
+
+/* --- 이미지 섹션 --- */
+.product-detail-page .product-image-section {
+    flex: 1;
+    max-width: 500px; /* 이미지 영역 최대 너비 */
+}
+
+.product-detail-page .product-main-image {
+    width: 100%;
+    padding-top: 100%; /* 1:1 비율 */
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #f1f3f5;
+}
+
+.product-detail-page .product-main-image img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.product-detail-page .product-thumbnail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.product-detail-page .thumbnail-item {
+    width: 100%;
+    padding-top: 100%;
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.2s;
+}
+
+.product-detail-page .thumbnail-item img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.product-detail-page .thumbnail-item:hover {
+    border-color: #ced4da;
+}
+
+.product-detail-page .thumbnail-item.active {
+    border-color: #fac608;
+}
+
+/* --- 정보 섹션 --- */
+.product-detail-page .product-info-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column; /* 레이아웃 핵심 */
+}
+
+.product-detail-page .product-seller-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.product-detail-page .seller-location {
+    font-size: 14px;
+    font-weight: 400;
+    color: #868e96;
+}
+
+.product-detail-page .divider-simple {
+    border-top: 1px solid #e9ecef;
+    margin: 16px 0;
+}
+
+/* 제목 + 태그 라인 스타일 */
+.product-detail-page .product-title-line {
+    display: flex;
+    align-items: baseline; /* 태그와 제목 하단을 맞춤 */
+    gap: 10px; /* 제목과 태그 사이 간격 */
+    margin-bottom: 4px; /* 메타 정보와의 간격 조정 */
+}
+
+/* 제목 스타일 */
+.product-detail-page .product-title-detail {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0; /* 아래쪽 마진 제거 (title-line에서 조정) */
+    word-break: keep-all; /* 단어 단위 줄바꿈 (선택 사항) */
+}
+
+/* 태그 스타일 */
+.product-detail-page .product-tag-detail {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    background-color: #fffbeb;
+    border: 1px solid #fac608;
+    padding: 4px 10px;
+    border-radius: 6px;
+    white-space: nowrap; /* 태그 내용 줄바꿈 방지 */
+}
+
+/* 메타 정보 스타일 */
+.product-detail-page .product-meta-detail {
+    display: flex;
+    gap: 12px;
+    font-size: 14px;
+    color: #868e96;
+    margin-bottom: 20px;
+}
+
+.product-detail-page .product-category-detail {
+    text-decoration: underline;
+}
+
+/* 가격 스타일: 오른쪽 정렬 */
+.product-detail-page .product-price-detail {
+    font-size: 32px;
+    font-weight: 800;
+    margin: 0;
+    text-align: right; /* 가격 오른쪽 정렬 */
+}
+
+/* 상품 설명 스타일 */
+.product-detail-page .product-content-detail {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #343a40;
+    min-height: 150px; /* 최소 높이 확보 */
+    flex-grow: 1; /* 버튼을 맨 아래로 밀어내는 핵심 스타일 */
+}
+
+/* 상품 통계 스타일 */
+.product-detail-page .product-stats-detail {
+    font-size: 14px;
+    color: #868e96;
+    display: flex;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.product-detail-page .product-stats-detail span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* --- 구매 버튼 --- */
+.product-detail-page .product-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.product-detail-page .wishlist-btn,
+.product-detail-page .buy-btn {
+    padding: 16px;
+    font-size: 18px;
+    font-weight: 700;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+}
+
+.product-detail-page .wishlist-btn {
+    flex: 1;
+    background-color: #f1f3f5;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.product-detail-page .wishlist-btn:hover {
+    background-color: #e9ecef;
+}
+
+.product-detail-page .buy-btn {
+    flex: 2;
+    background-color: #fac608;
+    color: #333;
+}
+
+.product-detail-page .buy-btn:hover {
+    background-color: #ffbf51;
+}
+
+/* --- 관련 상품 섹션 --- */
+.product-detail-page .related-products-section {
+    margin-top: 50px; /* 위 섹션과의 간격 */
+    padding-top: 30px;
+    border-top: 1px solid #e9ecef; /* 구분선 */
+    max-width: 1200px; /* 내용 레이아웃 최대 너비 유지 (선택 사항) */
+    margin-left: auto;   /* 내용 레이아웃 가운데 정렬 (선택 사항) */
+    margin-right: auto;  /* 내용 레이아웃 가운데 정렬 (선택 사항) */
+}
+
+.product-detail-page .section-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+/* 상품 목록 그리드 스타일 */
+.product-detail-page .related-product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+/* ProductItem 카드 스타일에 약간의 조정 */
+.product-detail-page .related-product-grid .product-card {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+.product-detail-page .related-product-grid .product-title {
+  font-size: 15px;
+}
+.product-detail-page .related-product-grid .product-price {
+  font-size: 16px;
+}
+
+
+/* --- 반응형 --- */
+@media (max-width: 768px) {
+    .product-detail-page .product-detail-container {
+        padding: 20px; /* 모바일 좌우 패딩 줄이기 */
+        margin: 10px;
+        border-radius: 8px;
+    }
+     .product-detail-page .product-detail-layout {
+        flex-direction: column; /* 모바일 세로 배치 */
+        max-width: 100%; /* 모바일 너비 제한 해제 */
+    }
+    .product-detail-page .product-image-section {
+        max-width: 100%;
+    }
+    .product-detail-page {
+        padding-top: 93px; /* 모바일 헤더 높이에 맞게 조정 */
+    }
+    .product-detail-page .related-products-section {
+         max-width: 100%; /* 모바일 너비 제한 해제 */
+    }
+    .product-detail-page .related-product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* 모바일 그리드 조정 */
+        gap: 15px;
+    }
+    /* 모바일에서 제목/가격 크기 조정 (선택 사항) */
+    .product-detail-page .product-title-detail {
+        font-size: 20px;
+    }
+    .product-detail-page .product-price-detail {
+        font-size: 28px;
+    }
+}
