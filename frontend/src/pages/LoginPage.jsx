@@ -22,7 +22,7 @@ const InputField = ({id, label, icon, error, children, ...props}) => (
   </div>
 );
 
-const LoginPage = ({ handleLogin }) => {
+const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -36,36 +36,31 @@ const LoginPage = ({ handleLogin }) => {
     setLoading(true);
     setErrors({});
 
+    const formData = new URLSearchParams();
+    formData.append('username', email);
+    formData.append('password', password);
+
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/login', {
+      const response = await fetch('http://127.0.0.1:8000/users/login', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: JSON.stringify({ email, password }),
+        body: formData
       });
 
       const data = await response.json();
 
       if (!response.ok) {
         let errorMessage = "로그인에 실패했습니다.";
-        if (Array.isArray(data.detail)) {
-            errorMessage = data.detail[0].msg; 
-        } else {
-            errorMessage = data.detail;
+        if (data.detail) {
+          errorMessage = data.detail;
         }
-
-        if (errorMessage.includes("이메일") || errorMessage.includes("email")) {
-            setErrors(prev => ({ ...prev, email: "존재하지 않는 이메일입니다." }));
-        } else if (errorMessage.includes("비밀번호")) {
-            setErrors(prev => ({ ...prev, password: errorMessage }));
-        } else {
-            setErrors(prev => ({ ...prev, form: errorMessage }));
-        }
+        setErrors(prev => ({ ...prev, form: errorMessage }));
         return;
       }
 
-      handleLogin(data);
+      handleLogin();
       navigate('/');
       
     } catch (err) {

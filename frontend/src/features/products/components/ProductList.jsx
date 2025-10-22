@@ -9,14 +9,20 @@ const ProductList = ({ categoryName }) => {
 
   useEffect(() => {
     setLoading(true);
-    let apiUrl = 'http://127.0.0.1:8000/api/products?sort=latest';
+    let apiUrl = '';
+
     if (categoryName) {
-      apiUrl += `&category=${encodeURIComponent(categoryName)}`;
+      apiUrl = `http://127.0.0.1:8000/categories/${encodeURIComponent(categoryName)}/products`;
+    } else {
+      apiUrl = 'http://127.0.0.1:8000/products';
     }
 
     fetch(apiUrl)
       .then(response => {
         if (!response.ok) {
+          if (response.status === 404) {
+            throw new Error('상품 정보를 찾을 수 없습니다.')
+          }
           throw new Error('데이터를 불러오는 데 실패했습니다.');
         }
         return response.json();

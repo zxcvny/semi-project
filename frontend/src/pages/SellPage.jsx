@@ -24,7 +24,7 @@ const SellPage = ({ user, handleLogout, isAuthReady }) => {
   const [content, setContent] = useState('');
   const [categories, setCategories] = useState([]);
   const [categoryId, setCategoryId] = useState('');
-  const [tag, setTag] = useState('선택안함');
+  const [tag, setTag] = useState('NONE');
 
   const [images, setImages] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
@@ -51,7 +51,7 @@ const SellPage = ({ user, handleLogout, isAuthReady }) => {
 
   // 카테고리 목록 가져오기
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/api/categories')
+    fetch('http://127.0.0.1:8000/categories')
       .then(response => response.json())
       .then(data => {
         setCategories(data);
@@ -64,7 +64,7 @@ const SellPage = ({ user, handleLogout, isAuthReady }) => {
 
   // '무료나눔' 선택 시 가격을 0으로 설정하고 수정 불가 처리
   useEffect(() => {
-    if (tag === '무료나눔') {
+    if (tag === 'FREE') {
       setPrice('0');
     }
   }, [tag]);
@@ -88,8 +88,8 @@ const SellPage = ({ user, handleLogout, isAuthReady }) => {
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    if (images.length + files.length > 3) {
-      alert('이미지는 최대 3개까지 업로드할 수 있습니다.');
+    if (images.length + files.length > 10) {
+      alert('이미지는 최대 10개까지 업로드할 수 있습니다.');
       return;
     }
 
@@ -128,40 +128,27 @@ const SellPage = ({ user, handleLogout, isAuthReady }) => {
 
     setLoading(true);
 
-    try {
-      // --- 이미지 업로드 단계 ---
-      const formData = new FormData();
-      images.forEach(image => {
-        formData.append('files', image);
-      });
+    const formData = new FormData();
 
-      const imageUploadResponse = await fetch('http://127.0.0.1:8000/api/upload-images', {
+    formData.append('title', title);
+    formData.append('content', content);
+    formData.append('price', Number(price));
+    formData.append('category_id', Number(categoryId));
+    formData.append('trade_city', selectedCity);
+    formData.append('trade_district', selectedDistrict);
+    formData.append('product_tag', tag);
+
+    formData.append('representative_image_index', 0);
+
+    images.forEach((imageFile) => {
+      formData.append('images', imageFile);
+    });
+
+    try {
+      const productResponse = await fetch('http://127.0.0.1:8000/products', {
         method: 'POST',
         body: formData,
-      });
-
-      if (!imageUploadResponse.ok) {
-        throw new Error('이미지 업로드에 실패했습니다.');
-      }
-
-      const { image_urls } = await imageUploadResponse.json();
-
-      // --- 상품 정보 등록 단계 ---
-      const productData = {
-        seller_id: user.user_id,
-        images: image_urls.map((url, index) => ({ image_url: url, image_order: index })),
-        title: title,
-        category_id: Number(categoryId),
-        tag: tag,
-        price: Number(price),
-        location: `${selectedCity} ${selectedDistrict}`,
-        content: content,
-      };
-
-      const productResponse = await fetch('http://127.0.0.1:8000/api/products', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(productData),
+        credentials: 'include',
       });
 
       if (!productResponse.ok) {
@@ -174,14 +161,20 @@ const SellPage = ({ user, handleLogout, isAuthReady }) => {
       navigate(`/products/${result.product_id}`);
 
     } catch (error) {
-      console.error("상품 등록 중 오류 발생:", error);
+      print("상품 등록 중 오류 발생:", error);
       alert(error.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const tagOptions = ['선택안함', '무료나눔', '미개봉', '중고', '급매'];
+  const tagOptions = [
+    { value: 'NONE', label: '선택안함' },
+    { value: 'FREE', label: '무료나눔' },
+    { value: 'NEW', label: '미개봉' },
+    { value: 'USED', label: '중고' },
+    { value: 'URGENT', label: '급매' }
+  ];
 
   return (
     <>
@@ -194,7 +187,7 @@ const SellPage = ({ user, handleLogout, isAuthReady }) => {
         <div className="sell-container">
           <form onSubmit={handleFormSubmit} className="sell-form">
             <section className="form-section">
-              <h2><PiImages className="section-icon" />상품 이미지 ({images.length}/3)</h2>
+              <h2><PiImages className="section-icon" />상품 이미지 ({images.length}/10)</h2>
               <p>이미지는 상품 등록 시 필수입니다. 첫 번째 이미지가 대표 이미지로 사용됩니다.</p>
               <div className="image-uploader">
                 <label htmlFor="image-upload" className="image-upload-button">
@@ -250,15 +243,15 @@ const SellPage = ({ user, handleLogout, isAuthReady }) => {
                 <label>상품 상태</label>
                 <div className="tag-radio-group">
                   {tagOptions.map(option => (
-                    <label key={option} className="radio-label">
+                    <label key={option.value} className="radio-label">
                       <input
                         type="radio"
                         name="tag"
-                        value={option}
-                        checked={tag === option}
+                        value={option.value}
+                        checked={tag === option.value}
                         onChange={(e) => setTag(e.target.value)}
                       />
-                      {option}
+                      {option.label}
                     </label>
                   ))}
                 </div>
@@ -274,7 +267,7 @@ const SellPage = ({ user, handleLogout, isAuthReady }) => {
                   placeholder="가격을 입력해주세요"
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
-                  disabled={tag === '무료나눔'} // '무료나눔' 선택 시 비활성화
+                  disabled={tag === 'FREE'} // '무료나눔' 선택 시 비활성화
                   required
                 />
               </div>

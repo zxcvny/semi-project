@@ -10,7 +10,7 @@ import { RiKakaoTalkFill } from "react-icons/ri";
 
 import "../styles/SignUpPage.css"
 
-// 반복되는 입력 필드 컴포넌트 분리, 로그인 필드 사용
+// 반복되는 입력 필드 컴포넌트 분리, 로그인 필드 재사용
 const InputField = ({id, label, icon, error, children, ...props}) => (
   <div className="login-input-group">
     <label htmlFor={id}>{label}</label>
@@ -30,6 +30,7 @@ const SignUpPage = () => {
     const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
     const [confirmPassword, setConfirmPassword] = useState('');
     const [nickname, setNickName] = useState('');
+
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({});
 
@@ -60,7 +61,7 @@ const SignUpPage = () => {
         setLoading(true);
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/users', {
+            const response = await fetch('http://127.0.0.1:8000/users/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

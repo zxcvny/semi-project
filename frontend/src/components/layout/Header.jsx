@@ -5,26 +5,8 @@ import { PiHandHeartFill } from "react-icons/pi";
 import { GoPerson, GoPlus  } from "react-icons/go";
 import '../../styles/Header.css'
 
-const Header = () => {
-  const [user, setUser] = useState(null);
+const Header = ({ user, handleLogout }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-        setUser(JSON.parse(storedUser));
-    }
-  }, []);
-
-  const handleLogout = () => {
-    if (window.confirm('로그아웃 하시겠습니까?')) {
-      localStorage.removeItem('user');
-      setUser(null);
-      navigate('/'); // 홈으로 이동
-      window.location.reload(); // 페이지 새로고침
-    }
-  };
   
   return (
     <header className="app-header">
@@ -59,7 +41,7 @@ const Header = () => {
             <>
               <div className="user-menu-container">
                 <div className="nickname-wrapper" onMouseEnter={() => setIsDropdownOpen(true)} onMouseLeave={() => setIsDropdownOpen(false)}>
-                  <p className="user-nickname"><span>{user.nickname}</span> 님</p>
+                  <p className="user-nickname"><span>{user.nickname || 'who?'}</span> 님</p>
                   {isDropdownOpen && (
                     <div className="dropdown-menu">
                       <Link to="/myinfo" className="dropdown-item">내 정보</Link>

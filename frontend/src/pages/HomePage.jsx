@@ -12,14 +12,14 @@ import { LiaBicycleSolid } from 'react-icons/lia';
 import { MdHelpOutline } from 'react-icons/md';
 
 const categoryIcons = {
-    '디지털기기': FiSmartphone,
-    '컴퓨터': FaComputer,
-    '카메라': FaCameraRetro,
-    '가구/인테리어': RiSofaLine,
-    '자전거': LiaBicycleSolid,
-    '패션/잡화': RiShoppingBag4Line,
-    '오디오': FiHeadphones,
-    '시계/쥬얼리': FiWatch,
+    'FiSmartphone': FiSmartphone,
+    'FaComputer': FaComputer,
+    'FaCameraRetro': FaCameraRetro,
+    'RiSofaLine': RiSofaLine,
+    'LiaBicycleSolid': LiaBicycleSolid,
+    'RiShoppingBag4Line': RiShoppingBag4Line,
+    'FiHeadphones': FiHeadphones,
+    'FiWatch': FiWatch,
     'default': MdHelpOutline
 };
 
@@ -29,8 +29,13 @@ const HomePage = ({ user, handleLogout }) => {
     const { categoryName } = useParams();
 
     useEffect(() => {
-        fetch('http://127.0.0.1:8000/api/categories')
-        .then(response => response.json())
+        fetch('http://127.0.0.1:8000/categories')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('카테고리 정보를 불러오는 데 실패했습니다.');
+            }
+            return response.json()
+        })
         .then(data => {
             setCategories(data);
             setLoading(false);
@@ -59,9 +64,9 @@ const HomePage = ({ user, handleLogout }) => {
                 <div className="category-container">
                     <nav className="category-nav">
                         {categories.map(cat => {
-                            const IconComponent = categoryIcons[cat.name] || categoryIcons.default;
+                            const IconComponent = categoryIcons[cat.icon_name] || categoryIcons.default;
                             return (
-                                <Link to={`/category/${encodeURIComponent(cat.name)}`} key={cat.category_id} className="link-to category-item">
+                                <Link to={`/categories/${encodeURIComponent(cat.name)}`} key={cat.category_id} className="link-to category-item">
                                     <div className="category-icon-wrapper">
                                         <IconComponent className="category-icon" />
                                     </div>

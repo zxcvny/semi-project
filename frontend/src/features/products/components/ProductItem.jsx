@@ -29,7 +29,7 @@ const formatPrice = (price) => {
 const ProductItem = ({ product }) => {
   // 대표 이미지 URL을 가져옵니다. 이미지가 없으면 기본 이미지를 사용합니다.
   const imageUrl = product.images && product.images.length > 0
-    ? `http://127.0.0.1:8000${product.images[0].image_url}`
+    ? `http://127.0.0.1:8000${product.images[0].image_url.replace('../static', '/static')}`
     : 'https://via.placeholder.com/250';
 
   return (
@@ -41,9 +41,11 @@ const ProductItem = ({ product }) => {
         <div className="product-details">
           <h4 className="product-title">{product.title}</h4>
           <p className="product-price">{formatPrice(product.price)}</p>
-          <p className="product-location">{product.location}</p>
+          <p className="product-location">
+            {product.trade_city} {product.trade_district}
+          </p>
           <div className="product-meta">
-            <span><FaHeart /> {product.wishlist_count}</span>
+            <span><FaHeart /> {product.likes}</span>
             <span className="time-ago">{formatTimeAgo(product.created_at)}</span>
           </div>
         </div>
