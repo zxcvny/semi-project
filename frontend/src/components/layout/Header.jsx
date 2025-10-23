@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { IoSearchOutline } from "react-icons/io5";
 import { PiHandHeartFill } from "react-icons/pi";
@@ -7,6 +7,16 @@ import '../../styles/Header.css'
 
 const Header = ({ user, handleLogout }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const navigate = useNavigate()
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      navigate(`/?q=${encodeURIComponent(searchTerm.trim())}`);
+    }
+  };
   
   return (
     <header className="app-header">
@@ -21,16 +31,18 @@ const Header = ({ user, handleLogout }) => {
           </Link>
         </div>
         {/* 검색창 */}
-        {/* 검색 결과 표시 창 만들어야 함 */}
         <div className="header-middle">
-          <div className="search-container">
-            <IoSearchOutline  className="search-icon"/>
+          <form onSubmit={handleSearch} className="search-container">
+            <IoSearchOutline className="search-icon" />
             <input
             type="text"
             className="search-input"
             placeholder="찾으시는 상품이 무엇인가요?"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             />
-          </div>
+            <button type="submit" style={{ display: 'none' }}></button> 
+          </form>
         </div>
         {/* 로그인, 회원가입, 판매하기 버튼 */}
         {/* 로그인 상태에 따라 변화해야 함 (로그아웃, 내정보, 판매하기) */}

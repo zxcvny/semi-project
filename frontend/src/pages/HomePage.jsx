@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import Header from '../components/layout/Header';
 import '../styles/HomePage.css';
 import ProductList from '../features/products/components/ProductList';
+import ProductItem from '../features/products/components/ProductItem';
+import '../styles/ProductList.css';
 
 import { FiSmartphone, FiHeadphones, FiWatch } from 'react-icons/fi';
 import { FaComputer } from 'react-icons/fa6';
@@ -25,9 +27,16 @@ const categoryIcons = {
 
 const HomePage = ({ user, handleLogout }) => {
     const [categories, setCategories] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loadingCategories, setLoadingCategories] = useState(true);
     const { categoryName } = useParams();
 
+    const [searchParams] = useSearchParams();
+    const query = searchParams.get('q');
+    const [searchResults, setSearchResults] = useState([]);
+    const [searchLoading, setSearchLoading] = useState(true);
+    const [searchError, setSearchError] = useState(null);
+
+    // 카테고리 가져오기
     useEffect(() => {
         fetch('http://localhost:8000/categories')
         .then(response => {
@@ -38,15 +47,46 @@ const HomePage = ({ user, handleLogout }) => {
         })
         .then(data => {
             setCategories(data);
-            setLoading(false);
+            setLoadingCategories(false);
         })
         .catch(error => {
             console.error("카테고리 데이터를 가져오는 데 실패했습니다:", error);
-            setLoading(false);
+            setLoadingCategories(false);
         });
     }, []);
 
-    if (loading) {
+    // 검색 결과
+    useEffect(() => {
+        if (!query) {
+          setSearchResults([]);
+          setSearchLoading(false);
+          return;
+        }
+
+        setSearchLoading(true);
+        setSearchError(null);
+        const apiUrl = `http://localhost:8000/products/search?q=${encodeURIComponent(query)}`;
+
+        fetch(apiUrl)
+        .then(response => {
+            if (!response.ok) {
+            throw new Error('검색 결과를 불러오는 데 실패했습니다.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            setSearchResults(data);
+        })
+        .catch(err => {
+            setSearchError(err.message);
+            setSearchResults([]);
+        })
+        .finally(() => {
+            setSearchLoading(false);
+        });
+    }, [query]);
+
+    if (loadingCategories) {
         return (
             <>
                 <Header user={user} handleLogout={handleLogout}/>
@@ -76,7 +116,30 @@ const HomePage = ({ user, handleLogout }) => {
                         })}
                     </nav>
                 </div>
-                <ProductList categoryName={categoryName} />
+                {/* 검색어 있을 때 화면, 없을 때 화면 */}
+                {query ? (
+                    // 검색어가 있을 때
+                    <div className="product-list-container">
+                        <div className="list-header">
+                            <h2>'{query}' 검색 결과 ({searchResults.length}개)</h2>
+                        </div>
+                        {searchLoading && <div>검색 중...</div>}
+                        {searchError && <div>에러: {searchError}</div>}
+                        {!searchLoading && !searchError && searchResults.length === 0 && (
+                            <div>'{query}'에 대한 검색 결과가 없습니다.</div>
+                        )}
+                        {!searchLoading && !searchError && searchResults.length > 0 && (
+                            <div className="product-grid">
+                            {searchResults.map(product => (
+                                <ProductItem key={product.product_id} product={product} />
+                            ))}
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    // 검색어가 없을 때
+                    <ProductList categoryName={categoryName} />
+                )}
             </div>
         </div>
     )

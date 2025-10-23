@@ -253,4 +253,16 @@ def get_liked_products_by_user(db: Session, user_id: int):
 
 # ----- 검색 관련 -----
 def search_products_by_title(db: Session, query: str, skip: int = 0, limit: int = 16):
-    pass
+    """상품 제목으로 검색"""
+    search_query = f"%{query}%"
+    return db.query(product_model.Product)\
+        .options(
+            joinedload(product_model.Product.seller),
+            joinedload(product_model.Product.category),
+            joinedload(product_model.Product.images)
+        )\
+        .filter(product_model.Product.title.ilike(search_query))\
+        .order_by(product_model.Product.created_at.desc())\
+        .offset(skip)\
+        .limit(limit)\
+        .all()

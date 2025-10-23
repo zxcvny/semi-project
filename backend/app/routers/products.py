@@ -83,6 +83,19 @@ def create_product(
 
     return crud.create_product(db=db, product=product_data, seller_id=current_user.user_id)
 
+@router.get("/search", response_model=List[product_schema.ProductResponse])
+def search_products(
+    q: str = "",
+    skip: int = 0,
+    limit: int = 16,
+    db: Session = Depends(get_db)
+):
+    """상품 제목으로 검색"""
+    if not q.strip():
+        return[]
+    products = crud.search_products_by_title(db, query=q, skip=skip, limit=limit)
+    return products
+
 @router.get("/{product_id}", response_model=product_schema.ProductResponse)
 def read_product(
     product_id: int, 
@@ -166,3 +179,4 @@ def unlike_product(
         
     crud.delete_like(db, db_like=db_like)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
