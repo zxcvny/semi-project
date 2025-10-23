@@ -130,13 +130,17 @@ const SellPage = ({ user, handleLogout, isAuthReady }) => {
 
     const formData = new FormData();
 
+    // 선택된 tag 값(예: 'NONE')에 해당하는 한글 label(예: '선택안함') 찾기
+    const selectedTagOption = tagOptions.find(option => option.value === tag);
+    const productTagValueToSend = selectedTagOption ? selectedTagOption.label : tag;
+
     formData.append('title', title);
     formData.append('content', content);
     formData.append('price', Number(price));
     formData.append('category_id', Number(categoryId));
     formData.append('trade_city', selectedCity);
     formData.append('trade_district', selectedDistrict);
-    formData.append('product_tag', tag);
+    formData.append('product_tag', productTagValueToSend);
 
     formData.append('representative_image_index', 0);
 

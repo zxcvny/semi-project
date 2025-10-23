@@ -75,7 +75,7 @@ def create_product(db: Session, product: product_schema.ProductCreate, seller_id
         price=product.price,
         trade_city=product.trade_city,
         trade_district=product.trade_district,
-        product_tag=product.product_tag,
+        product_tag=product.product_tag.name,
         category_id=product.category_id,
         seller_id=seller_id
     )
