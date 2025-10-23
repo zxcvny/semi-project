@@ -250,3 +250,7 @@ def get_liked_products_by_user(db: Session, user_id: int):
     return db.query(product_model.Product).join(product_model.ProductLike).filter(
         product_model.ProductLike.user_id == user_id
     ).all()
+
+# ----- 검색 관련 -----
+def search_products_by_title(db: Session, query: str, skip: int = 0, limit: int = 16):
+    pass
