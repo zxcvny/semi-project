@@ -136,6 +136,15 @@ def update_user_me(
 
     return crud.update_user(db=db, db_user=current_user, user_update=user_update)
 
+@router.get("/{user_id}/products", response_model=List[product_schema.ProductResponse])
+def read_user_products(
+    user_id: int,
+    db: Session = Depends(get_db)
+):
+    """특정 사용자가 등록한 상품 목록 조회"""
+    products = crud.get_products_by_user(db, user_id=user_id)
+    return products
+
 @router.get("/me/products", response_model=List[product_schema.ProductResponse])
 def read_my_products(
     db: Session = Depends(get_db),
