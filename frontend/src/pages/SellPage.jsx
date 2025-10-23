@@ -145,7 +145,7 @@ const SellPage = ({ user, handleLogout, isAuthReady }) => {
     });
 
     try {
-      const productResponse = await fetch('http://localhost:8000/products', {
+      const productResponse = await fetch('http://localhost:8000/products/', {
         method: 'POST',
         body: formData,
         credentials: 'include',
@@ -161,8 +161,8 @@ const SellPage = ({ user, handleLogout, isAuthReady }) => {
       navigate(`/products/${result.product_id}`);
 
     } catch (error) {
-      print("상품 등록 중 오류 발생:", error);
-      alert(error.message);
+      console.error("상품 등록 중 오류 발생:", error);
+      alert(error.message || '상품 등록 중 오류가 발생했습니다.');
     } finally {
       setLoading(false);
     }
