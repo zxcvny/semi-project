@@ -1,279 +1,378 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import ProductItem from '../features/products/components/ProductItem'; // ProductItem 컴포넌트 임포트
-import '../styles/ProductDetailPage.css'; // CSS 파일 임포트
-import { FaHeart, FaEye } from 'react-icons/fa'; // 아이콘 임포트
+import React, { useState, useEffect, useRef } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import ProductItem from '../features/products/components/ProductItem';
+import '../styles/ProductDetailPage.css';
+import { FaHeart, FaEye, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import Header from '../components/layout/Header'; // Header 컴포넌트 임포트
 
-const ProductDetailPage = ({ user }) => { // 현재 로그인 사용자 정보를 props로 받음
+// ProductDetailPage 컴포넌트가 Header에서 필요한 user와 handleLogout props를 받아야 함
+const ProductDetailPage = ({ user, handleLogout }) => {
     const { productId } = useParams();
+    const navigate = useNavigate();
     const [product, setProduct] = useState(null);
     const [sellerProducts, setSellerProducts] = useState([]);
     const [relatedProducts, setRelatedProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [currentImageIndex, setCurrentImageIndex] = useState(0); // 현재 선택된 이미지 인덱스
-    const [isModalOpen, setIsModalOpen] = useState(false); // 이미지 팝업 상태
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isLiked, setIsLiked] = useState(false);
 
+    const [sellerScrollIndex, setSellerScrollIndex] = useState(0);
+    const [relatedScrollIndex, setRelatedScrollIndex] = useState(0);
+    const itemsPerPage = 4;
+
+    const sellerGridRef = useRef(null);
+    const relatedGridRef = useRef(null);
+
+    // 시간 계산 함수
+    const formatTimeAgo = (dateString) => {
+        const now = new Date();
+        const past = new Date(dateString);
+        const seconds = Math.floor((now - past) / 1000);
+
+        let interval = seconds / 31536000;
+        if (interval > 1) return `${Math.floor(interval)}년 전`;
+        interval = seconds / 2592000;
+        if (interval > 1) return `${Math.floor(interval)}달 전`;
+        interval = seconds / 86400;
+        if (interval > 1) return `${Math.floor(interval)}일 전`;
+        interval = seconds / 3600;
+        if (interval > 1) return `${Math.floor(interval)}시간 전`;
+        interval = seconds / 60;
+        if (interval > 1) return `${Math.floor(interval)}분 전`;
+        return '방금 전';
+    };
+
+    // 상품 상세 정보 및 관련 데이터 로딩
     useEffect(() => {
-        // 상품 상세 정보 가져오기
-        const fetchProduct = async () => {
+        const fetchProductData = async () => {
+            setLoading(true);
+            setError(null);
+            setSellerScrollIndex(0);
+            setRelatedScrollIndex(0);
             try {
-                setLoading(true);
-                const response = await fetch(`http://localhost:8000/products/${productId}`);
-                if (!response.ok) throw new Error('상품 정보를 불러오는데 실패했습니다.');
-                const data = await response.json();
-                setProduct(data);
-                setCurrentImageIndex(data.images.findIndex(img => img.is_representative) || 0); // 대표 이미지 인덱스 설정
+                const productResponse = await fetch(`http://localhost:8000/products/${productId}`);
+                if (!productResponse.ok) throw new Error('상품 정보를 불러오는데 실패했습니다.');
+                const productData = await productResponse.json();
+                setProduct(productData);
+                const repIndex = productData.images.findIndex(img => img.is_representative);
+                setCurrentImageIndex(repIndex >= 0 ? repIndex : 0);
 
-                // 상품 정보 로드 후, 판매자의 다른 상품 및 관련 상품 가져오기
-                fetchSellerProducts(data.seller.user_id);
-                fetchRelatedProducts(data.category.name); // 카테고리 이름 사용
+                // 찜 상태 확인
+                if (user) {
+                     try {
+                         const likedProductsResponse = await fetch(`http://localhost:8000/users/me/likes`, { credentials: 'include' });
+                         if (likedProductsResponse.ok) {
+                             const likedProductsData = await likedProductsResponse.json();
+                             const likedIds = likedProductsData.map(p => p.product_id);
+                             setIsLiked(likedIds.includes(parseInt(productId)));
+                         } else {
+                              console.warn("찜 상태 확인 실패");
+                              setIsLiked(false);
+                         }
+                     } catch (likeErr) {
+                         console.error("찜 상태 확인 중 오류:", likeErr);
+                         setIsLiked(false);
+                     }
+                } else {
+                    setIsLiked(false);
+                }
+
+                // 판매자의 다른 상품 가져오기
+                if (productData.seller?.user_id) {
+                    const sellerProductsResponse = await fetch(`http://localhost:8000/users/${productData.seller.user_id}/products`);
+                    if (sellerProductsResponse.ok) {
+                        let sellerProductsData = await sellerProductsResponse.json();
+                        sellerProductsData = sellerProductsData.filter(p => p.product_id !== parseInt(productId));
+                        setSellerProducts(sellerProductsData);
+                    } else {
+                        console.error("판매자 상품 로딩 실패:", sellerProductsResponse.statusText);
+                        setSellerProducts([]);
+                    }
+                } else {
+                     setSellerProducts([]);
+                }
+
+                // 관련 상품 가져오기
+                if (productData.category?.name) {
+                    const relatedProductsResponse = await fetch(`http://localhost:8000/categories/${encodeURIComponent(productData.category.name)}/products?limit=10`);
+                    if (relatedProductsResponse.ok) {
+                        let relatedProductsData = await relatedProductsResponse.json();
+                        relatedProductsData = relatedProductsData.filter(p => p.product_id !== parseInt(productId)).slice(0, 8);
+                        setRelatedProducts(relatedProductsData);
+                    } else {
+                        console.error("관련 상품 로딩 실패:", relatedProductsResponse.statusText);
+                        setRelatedProducts([]);
+                    }
+                 } else {
+                     setRelatedProducts([]);
+                 }
 
             } catch (err) {
                 setError(err.message);
+                setSellerProducts([]);
+                setRelatedProducts([]);
             } finally {
-                // setLoading(false); // 다른 fetch들이 완료된 후 false로 설정
+                setLoading(false);
             }
         };
 
-        // 판매자의 다른 상품 가져오기
-        const fetchSellerProducts = async (sellerId) => {
-            try {
-                // 참고: 백엔드에 /users/{user_id}/products 와 같은 엔드포인트 필요 (이미 users.py에 /me/products 가 있음. 사용자 ID 기반 엔드포인트 추가 필요)
-                // 임시로 /users/me/products 사용 (실제로는 sellerId를 사용해야 함)
-                const response = await fetch(`http://localhost:8000/users/${sellerId}/products`); // 백엔드에 해당 엔드포인트 구현 필요
-                if (!response.ok) throw new Error('판매자의 다른 상품 정보를 가져오는데 실패했습니다.');
-                let data = await response.json();
-                // 현재 상품 제외, 최대 4개만 표시
-                data = data.filter(p => p.product_id !== parseInt(productId)).slice(0, 4);
-                setSellerProducts(data);
-            } catch (err) {
-                console.error("판매자 상품 로딩 오류:", err);
-                // 에러 상태를 설정할 수도 있음
-            }
-        };
+        fetchProductData();
+    }, [productId, user]);
 
-        // 관련 상품 가져오기 (같은 카테고리 상품)
-        const fetchRelatedProducts = async (categoryName) => {
-            try {
-                const response = await fetch(`http://localhost:8000/categories/${encodeURIComponent(categoryName)}/products?limit=5`); // API 호출
-                if (!response.ok) throw new Error('관련 상품 정보를 가져오는데 실패했습니다.');
-                let data = await response.json();
-                // 현재 상품 제외 (API에서 limit=5 요청 후 여기서 필터링하면 최대 4개)
-                data = data.filter(p => p.product_id !== parseInt(productId));
-                setRelatedProducts(data);
-            } catch (err) {
-                console.error("관련 상품 로딩 오류:", err);
-                // 에러 상태를 설정할 수도 있음
-            } finally {
-                 setLoading(false); // 모든 데이터 로딩 완료
-            }
-        };
-
-        fetchProduct();
-
-    }, [productId]);
-
-    const handleThumbnailClick = (index) => {
-        setCurrentImageIndex(index);
-    };
-
-    const openModal = () => setIsModalOpen(true);
+    const handleThumbnailClick = (index) => setCurrentImageIndex(index);
+    const openModal = () => product.images && product.images.length > 0 && setIsModalOpen(true);
     const closeModal = () => setIsModalOpen(false);
 
-    const showPrevImage = () => {
-        setCurrentImageIndex((prevIndex) =>
-            prevIndex === 0 ? product.images.length - 1 : prevIndex - 1
-        );
+    const showPrevImage = (e) => {
+        e.stopPropagation();
+        setCurrentImageIndex((prevIndex) => (prevIndex === 0 ? product.images.length - 1 : prevIndex - 1));
     };
 
-    const showNextImage = () => {
-        setCurrentImageIndex((prevIndex) =>
-            prevIndex === product.images.length - 1 ? 0 : prevIndex + 1
-        );
+    const showNextImage = (e) => {
+        e.stopPropagation();
+        setCurrentImageIndex((prevIndex) => (prevIndex === product.images.length - 1 ? 0 : prevIndex + 1));
     };
 
-    if (loading) return <div>로딩 중...</div>;
-    if (error) return <div>에러: {error}</div>;
-    if (!product) return <div>상품 정보를 찾을 수 없습니다.</div>;
+     const handleLike = async () => {
+        if (!user) {
+            alert('로그인이 필요합니다.');
+            navigate('/login');
+            return;
+        }
+        if (isOwner) {
+            alert('자신의 상품은 찜할 수 없습니다.');
+            return;
+        }
 
-    // 현재 보여줄 메인 이미지 URL
+        const method = isLiked ? 'DELETE' : 'POST';
+        try {
+            const response = await fetch(`http://localhost:8000/products/${productId}/like`, {
+                method: method,
+                credentials: 'include',
+            });
+
+            if (response.status === 204) {
+                 setIsLiked(!isLiked);
+                 setProduct(prev => ({
+                     ...prev,
+                     likes: isLiked ? prev.likes - 1 : prev.likes + 1
+                 }));
+            } else if (response.status === 400) {
+                 const errorData = await response.json();
+                 console.warn("찜 처리 실패 (400):", errorData.detail);
+                 if (errorData.detail === "이미 찜한 상품입니다.") setIsLiked(true);
+                 if (errorData.detail === "찜하지 않은 상품입니다.") setIsLiked(false);
+            } else {
+                 const errorData = await response.json().catch(() => ({}));
+                 throw new Error(errorData.detail || (isLiked ? '찜 취소 실패' : '찜하기 실패'));
+            }
+        } catch (err) {
+            console.error("찜 처리 중 오류:", err);
+            alert(err.message || '찜 처리 중 오류가 발생했습니다.');
+        }
+    };
+
+    const handleScroll = (direction, type) => {
+        const isSeller = type === 'seller';
+        const products = isSeller ? sellerProducts : relatedProducts;
+        const setScrollIndex = isSeller ? setSellerScrollIndex : setRelatedScrollIndex;
+        const currentScrollIndex = isSeller ? sellerScrollIndex : relatedScrollIndex;
+        const totalItems = products.length;
+        const maxScrollIndex = Math.max(0, totalItems - itemsPerPage);
+
+        let newScrollIndex;
+        if (direction === 'right') {
+            newScrollIndex = Math.min(currentScrollIndex + itemsPerPage, maxScrollIndex);
+        } else {
+            newScrollIndex = Math.max(currentScrollIndex - itemsPerPage, 0);
+        }
+        setScrollIndex(newScrollIndex);
+    };
+
+    const calculateTranslateX = (scrollIndex, gridRef) => {
+        if (!gridRef.current || gridRef.current.children.length === 0) return '0px';
+
+        const gridElement = gridRef.current;
+        const gridStyle = window.getComputedStyle(gridElement);
+        const gap = parseInt(gridStyle.gap || '0px');
+        let totalWidthBeforeIndex = 0;
+
+        for (let i = 0; i < scrollIndex; i++) {
+             if(gridElement.children[i]) {
+                const itemWidth = gridElement.children[i].getBoundingClientRect().width;
+                totalWidthBeforeIndex += itemWidth + gap;
+             }
+        }
+        return `-${totalWidthBeforeIndex}px`;
+    };
+
+    if (loading) return (
+        <>
+            <Header user={user} handleLogout={handleLogout} /> {/* 헤더 추가 */}
+            <div className="product-detail-page"><div className="loading-container">로딩 중...</div></div>
+        </>
+    );
+    if (error) return (
+        <>
+             <Header user={user} handleLogout={handleLogout} /> {/* 헤더 추가 */}
+             <div className="product-detail-page"><div className="error-container">에러: {error}</div></div>
+        </>
+    );
+    if (!product) return (
+        <>
+             <Header user={user} handleLogout={handleLogout} /> {/* 헤더 추가 */}
+             <div className="product-detail-page"><div className="not-found-container">상품 정보를 찾을 수 없습니다.</div></div>
+        </>
+    );
+
      const currentImageUrl = product.images && product.images.length > 0
       ? `http://localhost:8000${product.images[currentImageIndex]?.image_url.replace('../static', '/static')}`
       : 'https://via.placeholder.com/500';
 
-    const isOwner = user && product.seller.user_id === user.user_id; // 현재 사용자가 상품 판매자인지 확인
-
-    const handleLike = async () => {
-        if (!user) {
-            alert('로그인이 필요합니다.');
-            return;
-        }
-        if (isOwner) { // 자신의 상품이면 함수 종료
-            alert('자신의 상품은 찜할 수 없습니다.');
-            return;
-        }
-        // TODO: 찜하기/찜취소 API 호출 로직 구현
-        try {
-            // 예시: 찜 상태 확인 후 찜 또는 찜 취소 요청
-            // const isLiked = checkIfLiked(productId); // 찜 상태 확인 함수 (구현 필요)
-            // const method = isLiked ? 'DELETE' : 'POST';
-            const response = await fetch(`http://localhost:8000/products/${productId}/like`, {
-                method: 'POST', // 또는 DELETE
-                credentials: 'include',
-            });
-            if (!response.ok) {
-                const errorData = await response.json();
-                // 이미 찜한 경우 등의 에러 처리
-                if (response.status === 400 && errorData.detail === "이미 찜한 상품입니다.") {
-                     // 찜 취소 로직 호출
-                     const unlikeResponse = await fetch(`http://localhost:8000/products/${productId}/like`, {
-                        method: 'DELETE',
-                        credentials: 'include',
-                     });
-                     if (!unlikeResponse.ok) {
-                        const unlikeErrorData = await unlikeResponse.json();
-                        throw new Error(unlikeErrorData.detail || '찜 취소에 실패했습니다.');
-                     }
-                     alert('찜을 취소했습니다.');
-                     // UI 업데이트 (찜 수 감소 등)
-                     setProduct(prev => ({ ...prev, likes: prev.likes - 1 }));
-
-                } else {
-                    throw new Error(errorData.detail || '찜 처리에 실패했습니다.');
-                }
-            } else {
-                alert('상품을 찜했습니다!'); // 성공 메시지
-                // UI 업데이트 (찜 수 증가 등)
-                setProduct(prev => ({ ...prev, likes: prev.likes + 1 }));
-            }
-        } catch(err) {
-            alert(err.message);
-        }
-    }
+    const isOwner = user && product.seller.user_id === user.user_id;
 
     return (
+        // JSX 최상단을 Fragment(<>)로 감싸서 Header와 페이지 내용을 포함
         <>
-        <Header user={user} handleLogout={handleLogout} />
-        <div className="product-detail-page">
-            <div className="product-detail-container"> {/* 전체 컨테이너 */}
-                <div className="product-detail-layout"> {/* 이미지 + 정보 레이아웃 */}
-                    {/* 상품 이미지 섹션 */}
-                    <div className="product-image-section">
-                        <div className="product-main-image" onClick={openModal}>
-                             <img src={currentImageUrl} alt={product.title} />
+            <Header user={user} handleLogout={handleLogout} /> {/* 헤더 렌더링 */}
+            <div className="product-detail-page"> {/* 페이지 메인 컨텐츠 */}
+                <div className="product-detail-container">
+                    <div className="product-detail-layout">
+                        {/* --- 상품 이미지 섹션 --- */}
+                        <div className="product-image-section">
+                            <div className="product-main-image" onClick={openModal}>
+                                <img src={currentImageUrl} alt={product.title} />
+                            </div>
+                            {product.images && product.images.length > 1 && (
+                                <div className="product-thumbnail-grid">
+                                    {product.images.map((img, index) => (
+                                        <div
+                                            key={img.image_id}
+                                            className={`thumbnail-item ${index === currentImageIndex ? 'active' : ''}`}
+                                            onClick={() => handleThumbnailClick(index)}
+                                        >
+                                            <img src={`http://localhost:8000${img.image_url.replace('../static', '/static')}`} alt={`상품 이미지 ${index + 1}`} />
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
-                        {/* 썸네일 이미지 */}
-                        {product.images.length > 1 && (
-                            <div className="product-thumbnail-grid">
-                                {product.images.map((img, index) => (
-                                    <div
-                                        key={img.image_id}
-                                        className={`thumbnail-item ${index === currentImageIndex ? 'active' : ''}`}
-                                        onClick={() => handleThumbnailClick(index)}
-                                    >
-                                        <img src={`http://localhost:8000${img.image_url.replace('../static', '/static')}`} alt={`Thumbnail ${index + 1}`} />
-                                    </div>
+
+                        {/* --- 상품 정보 섹션 --- */}
+                        <div className="product-info-section">
+                            <div className="product-seller-info">
+                                <span>{product.seller.nickname}</span>
+                                <span className="seller-location">{product.trade_city} {product.trade_district}</span>
+                            </div>
+                            <div className="divider-simple"></div>
+                            <div className="product-title-line">
+                                <h1 className="product-title-detail">{product.title}</h1>
+                                {product.product_tag && product.product_tag !== "선택안함" && (
+                                    <span className="product-tag-detail">{product.product_tag}</span>
+                                )}
+                            </div>
+                            <div className="product-meta-detail">
+                                <Link to={`/categories/${encodeURIComponent(product.category.name)}`} className="product-category-detail link-to">{product.category.name}</Link>
+                                <span>·</span>
+                                <span>{formatTimeAgo(product.created_at)}</span>
+                            </div>
+                            <p className="product-price-detail">{product.price.toLocaleString('ko-KR')}원</p>
+                            <div className="divider-simple"></div>
+                            <div className="product-content-detail">
+                                {product.content.split('\n').map((line, index) => (
+                                    <React.Fragment key={index}>{line}<br /></React.Fragment>
                                 ))}
                             </div>
-                        )}
+                            <div className="product-stats-detail">
+                                <span><FaHeart /> 관심 {product.likes}</span>
+                                <span><FaEye /> 조회 {product.views}</span>
+                            </div>
+                            <div className="product-actions">
+                                {isOwner ? (
+                                    <div className="owner-actions" style={{ display: 'flex', gap: '15px', width: '100%' }}>
+                                        <button style={{ flex: 1 }} className="wishlist-btn">수정하기</button>
+                                        <button style={{ flex: 1, background: '#e03131', color: 'white' }} className="buy-btn">삭제하기</button>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <button onClick={handleLike} className="wishlist-btn">
+                                            <FaHeart style={{ color: isLiked ? '#e03131' : '#adb5bd' }} /> 찜 {product.likes}
+                                        </button>
+                                        <button className="buy-btn">채팅하기</button>
+                                    </>
+                                )}
+                            </div>
+                        </div>
                     </div>
+                </div>
 
-                    {/* 상품 정보 섹션 */}
-                    <div className="product-info-section">
-                        <div className="product-seller-info">
-                            <span>{product.seller.nickname}</span>
-                            <span className="seller-location">{product.trade_city} {product.trade_district}</span>
-                        </div>
-                        <div className="divider-simple"></div>
-                        <div className="product-title-line">
-                            <h1 className="product-title-detail">{product.title}</h1>
-                            {product.product_tag !== "선택안함" && (
-                                <span className="product-tag-detail">{product.product_tag}</span>
+                {/* --- 판매자의 다른 상품 --- */}
+                {sellerProducts.length > 0 && (
+                    <div className="related-products-section">
+                        <h2 className="section-title">{product.seller.nickname}님의 다른 상품</h2>
+                        <div className="related-product-carousel">
+                            {sellerProducts.length > itemsPerPage && sellerScrollIndex > 0 && (
+                                <button className="scroll-arrow left" onClick={() => handleScroll('left', 'seller')}><FaChevronLeft /></button>
                             )}
-                        </div>
-                         <div className="product-meta-detail">
-                            <span className="product-category-detail">{product.category.name}</span>
-                            <span>·</span>
-                            <span>{new Date(product.created_at).toLocaleString('ko-KR')}</span>
-                        </div>
-                        <p className="product-price-detail">{product.price.toLocaleString('ko-KR')}원</p>
-                        <div className="divider-simple"></div>
-
-                         <div className="product-content-detail">
-                            {product.content.split('\n').map((line, index) => (
-                                <React.Fragment key={index}>
-                                    {line}
-                                    <br />
-                                </React.Fragment>
-                            ))}
-                        </div>
-
-                         <div className="product-stats-detail">
-                            <span><FaHeart /> 관심 {product.likes}</span>
-                            <span><FaEye /> 조회 {product.views}</span>
-                        </div>
-
-                         <div className="product-actions">
-                            {!isOwner && (
-                                <button onClick={handleLike} className="wishlist-btn">
-                                    <FaHeart /> 찜 {product.likes}
-                                </button>
-                            )}
-                             {/* 자신의 상품일 경우 수정/삭제 버튼 */}
-                            {isOwner && (
-                                <div className="owner-actions" style={{ display: 'flex', gap: '10px', width: '100%' }}>
-                                    <button style={{ flex: 1, padding: '16px', borderRadius: '8px', border: '1px solid #ccc', background: '#f8f9fa' }}>수정하기</button>
-                                    <button style={{ flex: 1, padding: '16px', borderRadius: '8px', border: 'none', background: '#dc3545', color: 'white' }}>삭제하기</button>
+                            <div className="related-product-scroll-container">
+                                <div className="related-product-grid-wrapper" style={{ transform: `translateX(${calculateTranslateX(sellerScrollIndex, sellerGridRef)})` }}>
+                                    <div className="related-product-grid" ref={sellerGridRef}>
+                                        {sellerProducts.map(p => (
+                                            <div className="grid-item" key={p.product_id}><ProductItem product={p} /></div>
+                                        ))}
+                                    </div>
                                 </div>
-                             )}
-                            {!isOwner && <button className="buy-btn">채팅하기</button> } {/* TODO: 채팅 기능 연결 */}
+                            </div>
+                            {sellerProducts.length > itemsPerPage && sellerScrollIndex < sellerProducts.length - itemsPerPage && (
+                                <button className="scroll-arrow right" onClick={() => handleScroll('right', 'seller')}><FaChevronRight /></button>
+                            )}
                         </div>
                     </div>
-                </div>
+                )}
+
+                {/* --- 관련 상품 --- */}
+                {relatedProducts.length > 0 && (
+                    <div className="related-products-section">
+                        <h2 className="section-title">이 상품과 관련 있는 상품</h2>
+                        <div className="related-product-carousel">
+                            {relatedProducts.length > itemsPerPage && relatedScrollIndex > 0 && (
+                                <button className="scroll-arrow left" onClick={() => handleScroll('left', 'related')}><FaChevronLeft /></button>
+                            )}
+                            <div className="related-product-scroll-container">
+                                <div className="related-product-grid-wrapper" style={{ transform: `translateX(${calculateTranslateX(relatedScrollIndex, relatedGridRef)})` }}>
+                                    <div className="related-product-grid" ref={relatedGridRef}>
+                                        {relatedProducts.map(p => (
+                                            <div className="grid-item" key={p.product_id}><ProductItem product={p} /></div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                            {relatedProducts.length > itemsPerPage && relatedScrollIndex < relatedProducts.length - itemsPerPage && (
+                                <button className="scroll-arrow right" onClick={() => handleScroll('right', 'related')}><FaChevronRight /></button>
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                {/* --- 이미지 모달 --- */}
+                {isModalOpen && product.images && product.images.length > 0 && (
+                    <div className="modal-backdrop" onClick={closeModal}>
+                        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                            <img src={currentImageUrl} alt={product.title} className="modal-image" />
+                            <button className="close-button" onClick={closeModal}>×</button>
+                            {product.images.length > 1 && (
+                                <>
+                                    <button className="prev-arrow" onClick={showPrevImage}>&#10094;</button>
+                                    <button className="next-arrow" onClick={showNextImage}>&#10095;</button>
+                                    <div className="image-counter">{currentImageIndex + 1} / {product.images.length}</div>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                )}
             </div>
-
-            {/* 판매자의 다른 상품 */}
-            {sellerProducts.length > 0 && (
-                <div className="related-products-section">
-                    <h2 className="section-title">{product.seller.nickname}님의 다른 상품</h2>
-                    <div className="related-product-grid">
-                        {sellerProducts.map(p => (
-                            <ProductItem key={p.product_id} product={p} />
-                        ))}
-                    </div>
-                </div>
-            )}
-
-            {/* 관련 상품 */}
-            {relatedProducts.length > 0 && (
-                 <div className="related-products-section">
-                    <h2 className="section-title">이 상품과 관련 있는 상품</h2>
-                    <div className="related-product-grid">
-                        {relatedProducts.map(p => (
-                            <ProductItem key={p.product_id} product={p} />
-                        ))}
-                    </div>
-                </div>
-            )}
-
-             {/* 이미지 팝업 모달 */}
-            {isModalOpen && product.images.length > 0 && (
-                <div className="modal-backdrop" onClick={closeModal}>
-                    <div className="modal-content" onClick={(e) => e.stopPropagation()}> {/* Prevent closing when clicking image */}
-                        <img src={currentImageUrl} alt={product.title} className="modal-image" />
-                        <button className="close-button" onClick={closeModal}>×</button>
-                        {product.images.length > 1 && (
-                            <>
-                                <button className="prev-arrow" onClick={showPrevImage}>&#10094;</button>
-                                <button className="next-arrow" onClick={showNextImage}>&#10095;</button>
-                                <div className="image-counter">{currentImageIndex + 1} / {product.images.length}</div>
-                            </>
-                        )}
-                    </div>
-                </div>
-            )}
-        </div>
         </>
     );
 };

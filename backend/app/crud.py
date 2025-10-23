@@ -164,7 +164,7 @@ def get_products_by_user(db: Session, user_id: int):
             joinedload(product_model.Product.images)
         )\
         .filter(product_model.Product.seller_id == user_id)\
-        .order_by(product_model.Product.create_at.desc())\
+        .order_by(product_model.Product.created_at.desc())\
         .all()
 
 def update_product(
