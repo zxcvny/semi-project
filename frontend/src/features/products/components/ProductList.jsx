@@ -12,9 +12,9 @@ const ProductList = ({ categoryName }) => {
     let apiUrl = '';
 
     if (categoryName) {
-      apiUrl = `http://127.0.0.1:8000/categories/${encodeURIComponent(categoryName)}/products`;
+      apiUrl = `http://localhost:8000/categories/${encodeURIComponent(categoryName)}/products`;
     } else {
-      apiUrl = 'http://127.0.0.1:8000/products';
+      apiUrl = 'http://localhost:8000/products';
     }
 
     fetch(apiUrl)

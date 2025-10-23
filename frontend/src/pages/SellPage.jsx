@@ -51,7 +51,7 @@ const SellPage = ({ user, handleLogout, isAuthReady }) => {
 
   // 카테고리 목록 가져오기
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/categories')
+    fetch('http://localhost:8000/categories')
       .then(response => response.json())
       .then(data => {
         setCategories(data);
@@ -145,7 +145,7 @@ const SellPage = ({ user, handleLogout, isAuthReady }) => {
     });
 
     try {
-      const productResponse = await fetch('http://127.0.0.1:8000/products', {
+      const productResponse = await fetch('http://localhost:8000/products', {
         method: 'POST',
         body: formData,
         credentials: 'include',

@@ -99,7 +99,7 @@ def get_current_user_from_refresh_token(
         raise credentials_exception
     
     try:
-        payload = jwt.encode(refresh_token, REFRESH_SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(refresh_token, REFRESH_SECRET_KEY, algorithms=[ALGORITHM])
         email: str = payload.get("sub")
 
         if email is None:

@@ -22,7 +22,7 @@ const InputField = ({id, label, icon, error, children, ...props}) => (
   </div>
 );
 
-const LoginPage = () => {
+const LoginPage = ({ handleLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -41,12 +41,13 @@ const LoginPage = () => {
     formData.append('password', password);
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/users/login', {
+      const response = await fetch('http://localhost:8000/users/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: formData
+        body: formData,
+        credentials: 'include',
       });
 
       const data = await response.json();
@@ -98,7 +99,6 @@ const LoginPage = () => {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="이메일"
               icon={<FaEnvelope className="email-icon" />}
-              error={errors.email}
               required
             />
             {/* 비밀번호 입력 필드 + 비밀번호 표시 버튼 */}
@@ -110,7 +110,6 @@ const LoginPage = () => {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="비밀번호"
               icon={<FaLock className="password-icon"/>}
-              error={errors.password}
               required
             >
               <button

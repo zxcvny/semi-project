@@ -18,7 +18,7 @@ import auth
 router = APIRouter()
 
 # 이미지 저장 경로
-UPLOAD_DIR = "../../static/product_images"
+UPLOAD_DIR = "../static/product_images"
 os.makedirs(UPLOAD_DIR, exist_ok=True) # 없으면 자동 생성
 
 def save_image(upload_file: UploadFile) -> str:
@@ -32,7 +32,7 @@ def save_image(upload_file: UploadFile) -> str:
     
     return f"../static/product_images/{unique_filename}"
 
-@router.get("/", response_model=List[product_schema.ProductResponse])
+@router.get("", response_model=List[product_schema.ProductResponse])
 def read_products(
     skip: int = 0,
     limit: int = 16,

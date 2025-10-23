@@ -8,7 +8,7 @@ import crud
 
 router = APIRouter()
 
-@router.get("/", response_model=List[category_schema.CategoryResponse])
+@router.get("", response_model=List[category_schema.CategoryResponse])
 def read_all_categories(db: Session = Depends(get_db)):
     """모든 카테고리 목록 조회"""
     categories = crud.get_all_categories(db)

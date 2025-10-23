@@ -15,41 +15,51 @@ function App() {
   // 사용자 정보 가져오기
   const fetchUser = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/users/me', {
+      const response = await fetch('http://localhost:8000/users/me', {
         credentials: 'include',
       });
       if(response.ok) {
         const userData = await response.json();
         setUser(userData);
+        return true;
       } else {
         setUser(null);
+        return false;
       }
     } catch (error) {
-      print("사용자를 찾을 수 없음:", error);
+      console.error("사용자 정보 가져오기 실패:", error);
       setUser(null);
+      return false;
     } finally {
-      setIsAuthReady(true);
+
     }
   };
 
   useEffect(() => {
-    fetchUser();
+    const checkAuth = async () => {
+      await fetchUser();
+      setIsAuthReady(true);
+    };
+    checkAuth();
   }, []);
 
   // 로그인 성공 시 user 상태 업데이트
-  const handleLogin = () => {
-    fetchUser();
+  const handleLogin = async () => {
+    return await fetchUser();
   };
 
   // 로그아웃
   const handleLogout = async () => {
+    if (window.confirm('로그아웃 하시겠습니까?')) {
+      
+    }
     try {
-      await fetch('http://127.0.0.1:8000/users/logout', {
+      await fetch('http://localhost:8000/users/logout', {
         method: 'POST',
         credentials: 'include',
       });
     } catch (error) {
-      print("로그아웃 에러 발생", error)
+      console.error("로그아웃 에러 발생", error)
     } finally {
       setUser(null);
     }

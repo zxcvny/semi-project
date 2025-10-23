@@ -29,7 +29,7 @@ const HomePage = ({ user, handleLogout }) => {
     const { categoryName } = useParams();
 
     useEffect(() => {
-        fetch('http://127.0.0.1:8000/categories')
+        fetch('http://localhost:8000/categories')
         .then(response => {
             if (!response.ok) {
                 throw new Error('카테고리 정보를 불러오는 데 실패했습니다.');
