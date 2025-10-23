@@ -6,6 +6,7 @@ import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
 import SellPage from './pages/SellPage';
 import ProductDetailPage from './pages/ProductDetailPage';
+import ProductEditPage from './pages/ProductEditPage';
 
 import './styles/App.css';
 
@@ -81,7 +82,12 @@ function App() {
         <Route path="/sell" element={<SellPage user={user} handleLogout={handleLogout} isAuthReady={isAuthReady} />} />
         <Route
             path="/products/:productId"
-            element={<ProductDetailPage user={user} handleLogout={handleLogout} />}/>
+            element={<ProductDetailPage user={user} handleLogout={handleLogout} />}
+        />
+        <Route
+            path="/products/:productId/edit"
+            element={<ProductEditPage user={user} handleLogout={handleLogout} isAuthReady={isAuthReady} />}
+        />
       </Routes>
     </BrowserRouter>
     </>

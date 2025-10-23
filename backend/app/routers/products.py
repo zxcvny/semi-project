@@ -4,7 +4,7 @@ from fastapi import (
 )
 
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 from uuid import uuid4
 import os
 import shutil
@@ -110,11 +110,23 @@ def read_product(
 @router.put("/{product_id}", response_model=product_schema.ProductResponse)
 def update_product(
     product_id: int,
-    product_update: product_schema.ProductUpdate,
+    # --- Form 데이터로 받도록 변경 ---
+    title: str = Form(...),
+    content: str = Form(...),
+    price: int = Form(...),
+    category_id: int = Form(...),
+    trade_city: Optional[str] = Form(None),
+    trade_district: Optional[str] = Form(None),
+    product_tag: product_schema.ProductTag = Form(...),
+    product_status: product_schema.ProductStatus = Form(...),
+    keep_image_ids: List[int] = Form([]), # 유지할 기존 이미지 ID 목록
+    new_images: List[UploadFile] = File([]), # 새로 업로드된 이미지 파일 목록
+    representative_image_index: int = Form(0), # 전체 이미지 목록 기준 대표 이미지 인덱스
+    # ---------------------------------
     db: Session = Depends(get_db),
     current_user: user_model.User = Depends(auth.get_current_active_user),
 ):
-    """상품 정보 수정"""
+    """상품 정보 수정 (이미지 포함)"""
     db_product = crud.get_product(db, product_id=product_id)
     if not db_product:
         raise HTTPException(status_code=404, detail="상품을 찾을 수 없습니다.")
@@ -122,7 +134,82 @@ def update_product(
     if db_product.seller_id != current_user.user_id:
         raise HTTPException(status_code=403, detail="수정 권한이 없습니다.")
 
-    return crud.update_product(db=db, db_product=db_product, product_update=product_update)
+    # --- 이미지 처리 로직 추가 ---
+    current_images = db_product.images[:] # 기존 이미지 목록 복사
+    images_to_delete = []
+    final_image_schemas = [] # 최종적으로 DB에 저장될 이미지 스키마 목록
+
+    # 1. 유지할 이미지 처리
+    for img_id_to_keep in keep_image_ids:
+        found = False
+        for img in current_images:
+            if img.image_id == img_id_to_keep:
+                # 유지할 이미지 정보를 final_image_schemas에 추가
+                final_image_schemas.append(product_schema.ProductImageCreate(
+                    image_url=img.image_url, # 기존 URL 사용
+                    is_representative=False # 대표 여부는 나중에 설정
+                ))
+                found = True
+                break
+        if not found:
+             print(f"Warning: Keep image ID {img_id_to_keep} not found for product {product_id}")
+             # 필요시 여기서 오류 처리
+
+    # 2. 삭제할 이미지 결정 (current_images 중 keep_image_ids에 없는 것)
+    for img in current_images:
+        if img.image_id not in keep_image_ids:
+            images_to_delete.append(img) # 삭제 대상 모델 객체 추가
+
+    # 3. 새로 추가된 이미지 처리
+    new_image_urls = []
+    if new_images:
+         total_images = len(keep_image_ids) + len(new_images)
+         if total_images > 10:
+              raise HTTPException(status_code=400, detail="이미지는 최대 10개까지 등록할 수 있습니다.")
+         if total_images == 0:
+              raise HTTPException(status_code=400, detail="이미지는 최소 1개 이상 등록해야 합니다.")
+
+         for image_file in new_images:
+             saved_url = save_image(image_file)
+             new_image_urls.append(saved_url)
+             final_image_schemas.append(product_schema.ProductImageCreate(
+                 image_url=saved_url,
+                 is_representative=False # 대표 여부는 나중에 설정
+             ))
+
+    # 4. 대표 이미지 설정
+    if not (0 <= representative_image_index < len(final_image_schemas)):
+         # 기본값으로 첫 번째 이미지를 대표로 설정하거나 오류 발생
+         if final_image_schemas:
+              final_image_schemas[0].is_representative = True
+              print(f"Warning: Invalid representative index {representative_image_index}, defaulting to 0.")
+         else:
+              raise HTTPException(status_code=400, detail="대표 이미지를 설정할 수 없습니다 (이미지 없음).")
+    else:
+        final_image_schemas[representative_image_index].is_representative = True
+
+
+    # --- ProductUpdate 스키마 생성 ---
+    product_update_data = product_schema.ProductUpdate(
+        title=title,
+        content=content,
+        price=price,
+        category_id=category_id,
+        trade_city=trade_city,
+        trade_district=trade_district,
+        product_tag=product_tag,
+        product_status=product_status,
+        images=final_image_schemas # 최종 이미지 목록 전달
+    )
+    # -----------------------------
+
+    # CRUD 함수 호출 시 삭제할 이미지 객체 목록도 전달
+    return crud.update_product(
+        db=db,
+        db_product=db_product,
+        product_update=product_update_data,
+        images_to_delete=images_to_delete # 삭제할 이미지 객체 목록 전달
+    )
 
 @router.delete("/{product_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_product(
