@@ -135,12 +135,13 @@ const ProductDetailPage = ({ user, handleLogout }) => {
         setCurrentImageIndex((prevIndex) => (prevIndex === product.images.length - 1 ? 0 : prevIndex + 1));
     };
 
-     const handleLike = async () => {
-        if (!user) {
-            alert('로그인이 필요합니다.');
-            navigate('/login');
-            return;
+        const handleLike = async () => {
+            if (!user) {
+                alert('로그인이 필요합니다.');
+                navigate('/login');
+                return;
         }
+
         if (isOwner) {
             alert('자신의 상품은 찜할 수 없습니다.');
             return;
@@ -171,6 +172,24 @@ const ProductDetailPage = ({ user, handleLogout }) => {
         } catch (err) {
             console.error("찜 처리 중 오류:", err);
             alert(err.message || '찜 처리 중 오류가 발생했습니다.');
+        }
+        
+    };
+
+                    // --- 채팅하기 ---
+    const handleChat = async () => {
+        if (!user) {
+            alert('로그인이 필요합니다.');
+            navigate('/login');
+            return;
+        }
+
+        if (isOwner) {
+            alert('자신의 상품에는 채팅을 걸 수 없습니다.');
+            return;
+        }
+        if(user) {
+        alert('기능 구현중입니다><');
         }
     };
 
@@ -227,11 +246,43 @@ const ProductDetailPage = ({ user, handleLogout }) => {
         </>
     );
 
+    
      const currentImageUrl = product.images && product.images.length > 0
       ? `http://localhost:8000${product.images[currentImageIndex]?.image_url.replace('../static', '/static')}`
       : 'https://via.placeholder.com/500';
 
     const isOwner = user && product.seller.user_id === user.user_id;
+
+    // --- 상품 수정 함수 ---
+    const handleEdit = () => {
+        // 수정 페이지로 이동 (수정 페이지 라우트 및 컴포넌트 필요)
+        navigate(`/products/${productId}/edit`);
+    };
+
+    // --- 상품 삭제 함수 ---
+    const handleDelete = async () => {
+        if (!product) return;
+
+        if (window.confirm(`'${product.title}' 상품을 정말 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.`)) {
+            try {
+                const response = await fetch(`http://localhost:8000/products/${productId}`, {
+                    method: 'DELETE',
+                    credentials: 'include', // 인증 쿠키 포함
+                });
+
+                if (response.status === 204) { // 성공 (No Content)
+                    alert('상품이 성공적으로 삭제되었습니다.');
+                    navigate('/'); // 홈 페이지 또는 다른 적절한 페이지로 이동
+                } else {
+                    const errorData = await response.json().catch(() => ({})); // json 파싱 실패 대비
+                    throw new Error(errorData.detail || '상품 삭제에 실패했습니다.');
+                }
+            } catch (err) {
+                console.error("상품 삭제 중 오류:", err);
+                alert(err.message || '상품 삭제 중 오류가 발생했습니다.');
+            }
+        }
+    };
 
     return (
         // JSX 최상단을 Fragment(<>)로 감싸서 Header와 페이지 내용을 포함
@@ -292,15 +343,17 @@ const ProductDetailPage = ({ user, handleLogout }) => {
                             <div className="product-actions">
                                 {isOwner ? (
                                     <div className="owner-actions" style={{ display: 'flex', gap: '15px', width: '100%' }}>
-                                        <button style={{ flex: 1 }} className="wishlist-btn">수정하기</button>
-                                        <button style={{ flex: 1, background: '#e03131', color: 'white' }} className="buy-btn">삭제하기</button>
+                                            {/* 수정 버튼 onClick 연결 */}
+                                        <button style={{ flex: 1 }} className="wishlist-btn" onClick={handleEdit}>수정하기</button>
+                                            {/* 삭제 버튼 onClick 연결 */}
+                                        <button style={{ flex: 1, background: '#e03131', color: 'white' }} className="buy-btn" onClick={handleDelete}>삭제하기</button>
                                     </div>
                                 ) : (
                                     <>
                                         <button onClick={handleLike} className="wishlist-btn">
                                             <FaHeart style={{ color: isLiked ? '#e03131' : '#adb5bd' }} /> 찜 {product.likes}
                                         </button>
-                                        <button className="buy-btn">채팅하기</button>
+                                        <button  onClick={handleChat} className="buy-btn">채팅하기</button>
                                     </>
                                 )}
                             </div>
