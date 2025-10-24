@@ -91,7 +91,7 @@ function App() {
         />
         <Route
             path="/myinfo"
-            element={<MyInfoPage user={user} handleLogout={handleLogout} />}/>
+            element={<MyInfoPage user={user} handleLogout={handleLogout} setUser={setUser} />}/>
       </Routes>
     </BrowserRouter>
     </>
