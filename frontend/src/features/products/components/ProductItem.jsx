@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { FaHeart } from 'react-icons/fa';
+import { FaHeart, FaComment, FaEye } from 'react-icons/fa';
 import '../../../styles/ProductItem.css';
 
 // 시간 계산 함수 (예: "2분 전", "1시간 전")
@@ -51,7 +51,7 @@ const ProductItem = ({ product }) => {
             {product.trade_city} {product.trade_district}
           </p>
           <div className="product-meta">
-            <span><FaHeart /> {product.likes}</span>
+            <span><FaHeart /> {product.likes} <FaEye /> {product.views}</span>
             <span className="time-ago">{formatTimeAgo(product.created_at)}</span>
           </div>
         </div>

@@ -1,0 +1,105 @@
+/* frontend/src/components/myinfo/MyInfoSections.css */
+
+/* ============================================= */
+/* == 상품 캐러셀 섹션 == */
+/* ============================================= */
+.product-carousel-section {
+    margin-top: 50px;
+    padding-top: 30px;
+    border-top: 1px solid #e9ecef;
+    /* max-width, margin-left/right는 MyInfoPage.css에서 제어 */
+}
+
+.product-carousel-section .section-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+/* 캐러셀 전체 컨테이너 (화살표 위치 기준) */
+.product-carousel-section .carousel-container {
+    position: relative; /* 화살표 absolute positioning 기준 */
+    padding: 0 40px; 
+}
+
+/* 상품 그리드를 감싸는 영역 (넘치는 부분 숨김) */
+.product-carousel-section .product-grid-wrapper {
+    overflow: hidden; /* 여기가 보이는 영역 */
+    margin: 0; /* 불필요한 마진 제거 */
+    padding: 0; /* 불필요한 패딩 제거 */
+}
+
+/* 실제 슬라이드되는 그리드 (flex 사용) */
+.product-carousel-section .product-grid {
+    display: flex;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    transition: transform 0.3s ease-in-out;
+}
+
+/* 그리드 내 각 상품 아이템 */
+.product-carousel-section .product-grid .product-card {
+  flex: 0 0 25%; /* 4개 아이템 너비 */
+  max-width: 23%;
+  box-sizing: border-box;
+  padding: 0 10px; /* 아이템 좌우 간격 */
+}
+
+/* 상품 카드 스타일 조정 */
+.product-carousel-section .product-grid .product-card {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+.product-carousel-section .product-grid .product-title {
+  font-size: 15px;
+}
+.product-carousel-section .product-grid .product-price {
+  font-size: 16px;
+}
+
+/* 좌우 화살표 버튼 스타일 (위치 조정) */
+.product-carousel-section .carousel-arrow {
+    position: absolute;
+    top: 50%;
+    /* 버튼 세로 중앙 정렬 (- 버튼 높이의 절반 정도) */
+    transform: translateY(-50%); /* 정확한 중앙 정렬 */
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid #dee2e6;
+    border-radius: 50%;
+    width: 40px; /* 버튼 크기 */
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    color: #495057;
+    font-size: 18px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s;
+}
+.product-carousel-section .carousel-arrow:hover {
+    background-color: white;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    color: #000;
+}
+.product-carousel-section .carousel-arrow.prev {
+    /* left: 5px; */
+    left: -40px; /* 버튼 너비의 절반만큼 왼쪽 바깥으로 이동 */
+}
+.product-carousel-section .carousel-arrow.next {
+    /* right: 5px; */
+    right: -40px; /* 버튼 너비의 절반만큼 오른쪽 바깥으로 이동 */
+}
+
+/* 상품 없을 때 메시지 */
+.product-carousel-section .empty-message {
+    text-align: center;
+    color: #868e96;
+    padding: 30px 0;
+    font-size: 16px;
+}
+
+/* ============================================= */
+/* == 반응형 스타일 제거됨 == */
+/* ============================================= */

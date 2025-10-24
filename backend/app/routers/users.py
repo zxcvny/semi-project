@@ -7,7 +7,7 @@ from typing import Annotated, List
 
 from database import get_db
 from schemas import user_schema, product_schema
-from models import user_model
+from models import user_model, product_model
 
 import utils
 import auth
@@ -136,6 +136,18 @@ def update_user_me(
 
     return crud.update_user(db=db, db_user=current_user, user_update=user_update)
 
+@router.get("/me/products", response_model=List[product_schema.ProductResponse])
+def read_my_products(
+    db: Session = Depends(get_db),
+    current_user: user_model.User = Depends(auth.get_current_active_user)
+):
+    products = db.query(product_model.Product).filter(
+        product_model.Product.seller_id == current_user.user_id
+    ).all()
+
+    return products
+
+
 @router.get("/{user_id}/products", response_model=List[product_schema.ProductResponse])
 def read_user_products(
     user_id: int,
@@ -143,15 +155,8 @@ def read_user_products(
 ):
     """특정 사용자가 등록한 상품 목록 조회"""
     products = crud.get_products_by_user(db, user_id=user_id)
+    
     return products
-
-@router.get("/me/products", response_model=List[product_schema.ProductResponse])
-def read_my_products(
-    db: Session = Depends(get_db),
-    current_user: user_model.User = Depends(auth.get_current_active_user)
-):
-    """현재 사용자가 등록한 상품 목록 조회"""
-    return crud.get_products_by_user(db, user_id=current_user.user_id)
 
 @router.get("/me/likes", response_model=List[product_schema.ProductResponse])
 def read_my_liked_products(

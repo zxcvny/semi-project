@@ -1,14 +1,13 @@
 from fastapi import (
     APIRouter, Depends, HTTPException, status, Response, 
-    UploadFile, File, Form
+    UploadFile, File, Form, Request
 )
-
+from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from uuid import uuid4
 import os
 import shutil
-
 from database import get_db
 from schemas import product_schema
 from models import user_model
@@ -16,6 +15,8 @@ import crud
 import auth
 
 router = APIRouter()
+
+viewed_products = {}
 
 # 이미지 저장 경로
 UPLOAD_DIR = "../static/product_images"
@@ -97,14 +98,22 @@ def search_products(
     return products
 
 @router.get("/{product_id}", response_model=product_schema.ProductResponse)
-def read_product(
-    product_id: int, 
-    db: Session = Depends(get_db)
-):
-    """ID로 특정 상품 상세 정보 조회"""
-    db_product = crud.get_product(db, product_id=product_id)
-    if db_product is None:
-        raise HTTPException(status_code=404, detail="상품을 찾을 수 없습니다.")
+def read_product(product_id: int, request: Request, db: Session = Depends(get_db)):
+    client_ip = request.client.host
+    now = datetime.now()
+
+    # 최근 1분 내에 조회한 기록이 있으면 조회수 증가하지 않음
+    last_view = viewed_products.get(client_ip, {}).get(product_id)
+    if not last_view or now - last_view > timedelta(minutes=0.001):
+        db_product = crud.get_product(db, product_id=product_id)
+        db_product.views += 1
+        db.commit()
+        db.refresh(db_product)
+
+        viewed_products.setdefault(client_ip, {})[product_id] = now
+    else:
+        db_product = crud.get_product(db, product_id=product_id)
+
     return db_product
 
 @router.put("/{product_id}", response_model=product_schema.ProductResponse)
