@@ -1,0 +1,163 @@
+/* frontend/src/styles/UserProfileSection.css */
+
+.user-profile-section {
+    padding: 30px 40px; /* 패딩 증가 */
+    background-color: #fff; /* 흰색 배경 */
+    border-radius: 16px; /* 둥근 모서리 */
+    margin-bottom: 40px; /* 아래 캐러셀과의 간격 */
+    text-align: center;
+    max-width: 800px; /* 최대 너비 제한 */
+    margin-left: auto;  /* 가운데 정렬 */
+    margin-right: auto; /* 가운데 정렬 */
+    box-sizing: border-box;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* 약간의 그림자 */
+    border: 1px solid #f1f3f5; /* 옅은 테두리 */
+}
+
+.user-profile-section h2 {
+    margin-top: 0;
+    margin-bottom: 30px; /* 제목 아래 여백 증가 */
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.profile-info {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* 각 항목 사이 간격 */
+    margin-bottom: 30px; /* 버튼과의 간격 */
+    text-align: left; /* 내부 텍스트 왼쪽 정렬 */
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column; /* 레이블과 인풋 수직 정렬 */
+}
+
+.info-item label {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px; /* 레이블과 인풋 사이 간격 */
+    color: #495057; /* 레이블 색상 */
+}
+
+.info-item input {
+    padding: 12px 16px;
+    border: 1px solid #dee2e6; /* 테두리 색상 변경 */
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background-color: #f8f9fa; /* 기본 배경색 */
+}
+
+/* 읽기 전용 및 비활성화 상태 스타일 */
+.info-item input:read-only,
+.info-item input:disabled {
+    background-color: #e9ecef; /* 비활성화 배경색 */
+    color: #868e96; /* 비활성화 텍스트 색상 */
+    cursor: not-allowed;
+}
+
+/* 수정 모드 활성화 시 스타일 (읽기 전용이 아닐 때) */
+.info-item input:not(:read-only):not(:disabled) {
+    background-color: #fff; /* 수정 가능할 때 흰색 배경 */
+    border-color: #ced4da;
+}
+
+/* 포커스 시 테두리 강조 */
+.info-item input:focus:not(:read-only):not(:disabled) {
+    outline: none;
+    border-color: #fac608;
+    box-shadow: 0 0 0 2px rgba(250, 198, 8, 0.2); /* 포커스 효과 */
+}
+
+
+.profile-actions {
+    display: flex;
+    justify-content: center; /* 버튼 가운데 정렬 */
+    gap: 15px; /* 버튼 사이 간격 */
+    margin-top: 20px; /* 메시지 표시 영역과의 간격 */
+}
+
+.edit-btn,
+.withdraw-btn {
+    padding: 10px 25px; /* 버튼 크기 조정 */
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+    border: 1px solid transparent; /* 테두리 공간 확보 */
+}
+
+/* 수정/확인 버튼 스타일 */
+.edit-btn {
+    background-color: #fac608;
+    color: #333;
+    border-color: #fac608;
+}
+.edit-btn:hover {
+    background-color: #fcc419;
+    border-color: #fcc419;
+}
+.edit-btn:disabled {
+    background-color: #e9ecef;
+    border-color: #e9ecef;
+    color: #adb5bd;
+    cursor: not-allowed;
+}
+
+
+/* 탈퇴 버튼 스타일 */
+.withdraw-btn {
+    background-color: #fff;
+    color: #e03131; /* 빨간색 텍스트 */
+    border: 1px solid #f03e3e;
+}
+.withdraw-btn:hover {
+    background-color: #fff5f5;
+    border-color: #c03030;
+}
+.withdraw-btn:disabled {
+    background-color: #f8f9fa;
+    border-color: #e9ecef;
+    color: #adb5bd;
+    cursor: not-allowed;
+}
+
+
+/* 에러 메시지 스타일 */
+.profile-error-message {
+    color: #e03131;
+    font-size: 14px;
+    margin-top: 15px;
+    margin-bottom: 0; /* 아래쪽 버튼과의 간격을 profile-actions에서 제어 */
+    font-weight: 500;
+}
+
+/* 성공 메시지 스타일 */
+.profile-success-message {
+    color: #2f9e44; /* 초록색 */
+    font-size: 14px;
+    margin-top: 15px;
+    margin-bottom: 0;
+    font-weight: 500;
+}
+
+/* 반응형 스타일 (선택 사항) */
+@media (max-width: 768px) {
+    .user-profile-section {
+        padding: 20px;
+    }
+    .profile-info {
+        gap: 15px;
+    }
+    .profile-actions {
+        flex-direction: column; /* 작은 화면에서 버튼 수직 정렬 */
+        gap: 10px;
+    }
+    .edit-btn,
+    .withdraw-btn {
+        width: 100%; /* 버튼 전체 너비 사용 */
+    }
+}

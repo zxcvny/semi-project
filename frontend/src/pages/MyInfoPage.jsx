@@ -3,11 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import Header from '../components/layout/Header';
 import WishlistSection from '../components/layout/myinfo/WishlistSection';
 import MySellSection from '../components/layout/myinfo/MySellSection';
+import UserProfileSection from '../components/layout/myinfo/UserProfileSection';
 import '../styles/MyInfoPage.css'; 
 
-
 // --- MyInfoPage 컴포넌트 ---
-const MyInfoPage = ({ user, handleLogout }) => {
+const MyInfoPage = ({ user, handleLogout, setUser }) => {
   return (
     <>
       <Header user={user} handleLogout={handleLogout} />
@@ -16,11 +16,7 @@ const MyInfoPage = ({ user, handleLogout }) => {
         {/* 내용 컨테이너 */}
         <div className="my-info-container">
           {/* 사용자 정보 섹션 */}
-          <div className="user-profile-section">
-            <h2>{user ? user.nickname : '사용자'}님, 안녕하세요!</h2>
-            {/* 프로필 수정 버튼 등 */}
-          </div>
-
+          <UserProfileSection user={user} setUser={setUser} />
          {/* --- 👇 찜 목록 섹션 컴포넌트 렌더링 --- */}
           <WishlistSection user={user} />
 
