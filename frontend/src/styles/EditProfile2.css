@@ -1,0 +1,128 @@
+.app-profile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  background-color: #f9f9f9;
+}
+
+
+.profile-container {
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 40px;
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+.profile-container h1 {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.profile-container p {
+  color: grey;
+  margin-bottom: 24px;
+}
+
+
+.profile-form {
+  width: 100%;
+}
+
+
+.profile-input-group {
+  margin-bottom: 20px;
+}
+
+.profile-input-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.profile-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.profile-input-wrapper .profile-icon {
+  position: absolute;
+  left: 16px;
+  color: #dfe0df;
+  transition: color 0.2s ease-in-out;
+}
+
+.profile-input-wrapper input {
+  width: 100%;
+  padding: 14px 14px 14px 45px;
+  border: 2px solid #dfe0df;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.2s ease-in-out;
+}
+
+.profile-input-wrapper:focus-within input {
+  outline: none;
+  border-color: #fac608;
+}
+
+.profile-input-wrapper:focus-within .profile-icon {
+  color: #fac608;
+}
+
+.profile-input-wrapper.has-error input {
+  border-color: #c0564b;
+}
+
+.profile-error-message {
+  color: #c0564b;
+  font-size: 13px;
+  margin-top: 6px;
+  margin-left: 4px;
+}
+
+
+.profile-password-toggle-btn {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #4e4637;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+}
+
+
+.profile-btn {
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 8px;
+  background-color: #fac608;
+  color: #333;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.profile-btn:hover {
+  background-color: #ffbf51;
+}
+
+.profile-input-wrapper input:disabled {
+  background-color: #f3f3f3;
+  color: #999;
+  cursor: not-allowed;
+}
