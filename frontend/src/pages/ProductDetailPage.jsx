@@ -3,9 +3,8 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import ProductItem from '../features/products/components/ProductItem';
 import '../styles/ProductDetailPage.css';
 import { FaHeart, FaEye, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-import Header from '../components/layout/Header'; // Header 컴포넌트 임포트
+import Header from '../components/layout/Header';
 
-// ProductDetailPage 컴포넌트가 Header에서 필요한 user와 handleLogout props를 받아야 함
 const ProductDetailPage = ({ user, handleLogout }) => {
     const { productId } = useParams();
     const navigate = useNavigate();
@@ -208,6 +207,38 @@ const ProductDetailPage = ({ user, handleLogout }) => {
         return `-${totalWidthBeforeIndex}px`;
     };
 
+    const handleDelete = async () => {
+        if (!user || !product || user.user_id !== product.seller.user_id) {
+            alert('삭제 권한이 없습니다.');
+            return;
+        }
+
+        if (window.confirm('정말로 이 상품을 삭제하시겠습니까?\n삭제된 상품은 복구할 수 없습니다.')) {
+            try {
+                const response = await fetch(`http://localhost:8000/products/${productId}`, {
+                    method: 'DELETE',
+                    credentials: 'include',
+                });
+
+                if (response.status === 204) {
+                    alert('상품이 삭제되었습니다.');
+                    navigate('/'); // 홈으로 이동하거나 마이페이지 등으로 이동
+                } else if (response.status === 403) {
+                     alert('상품을 삭제할 권한이 없습니다.');
+                } else if (response.status === 404) {
+                    alert('상품을 찾을 수 없습니다.');
+                }
+                 else {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.detail || '상품 삭제에 실패했습니다.');
+                }
+            } catch (err) {
+                console.error("상품 삭제 중 오류:", err);
+                alert(err.message || '상품 삭제 중 오류가 발생했습니다.');
+            }
+        }
+    };
+
     if (loading) return (
         <>
             <Header user={user} handleLogout={handleLogout} /> {/* 헤더 추가 */}
@@ -234,7 +265,6 @@ const ProductDetailPage = ({ user, handleLogout }) => {
     const isOwner = user && product.seller.user_id === user.user_id;
 
     return (
-        // JSX 최상단을 Fragment(<>)로 감싸서 Header와 페이지 내용을 포함
         <>
             <Header user={user} handleLogout={handleLogout} /> {/* 헤더 렌더링 */}
             <div className="product-detail-page"> {/* 페이지 메인 컨텐츠 */}
@@ -292,8 +322,8 @@ const ProductDetailPage = ({ user, handleLogout }) => {
                             <div className="product-actions">
                                 {isOwner ? (
                                     <div className="owner-actions" style={{ display: 'flex', gap: '15px', width: '100%' }}>
-                                        <button style={{ flex: 1 }} className="wishlist-btn">수정하기</button>
-                                        <button style={{ flex: 1, background: '#e03131', color: 'white' }} className="buy-btn">삭제하기</button>
+                                        <Link to={`/products/${productId}/edit`} style={{ flex: 1 }} className="wishlist-btn link-to">수정하기</Link>
+                                        <button onClick={handleDelete} style={{ flex: 1, background: '#e03131', color: 'white' }} className="buy-btn">삭제하기</button>
                                     </div>
                                 ) : (
                                     <>

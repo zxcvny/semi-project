@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { FaHeart, FaComment } from 'react-icons/fa';
+import { FaHeart, FaComment, FaEye } from 'react-icons/fa';
 import '../../../styles/ProductItem.css';
 
 // 시간 계산 함수 (예: "2분 전", "1시간 전")
@@ -27,9 +27,15 @@ const formatPrice = (price) => {
 }
 
 const ProductItem = ({ product }) => {
-  // 대표 이미지 URL을 가져옵니다. 이미지가 없으면 기본 이미지를 사용합니다.
-  const imageUrl = product.images && product.images.length > 0
-    ? `http://localhost:8000${product.images[0].image_url.replace('../static', '/static')}`
+  let representativeImage = null;
+  if (product.images && product.images.length > 0) {
+    representativeImage = product.images.find(img => img.is_representative);
+    if (!representativeImage) {
+      representativeImage = product.images[0];
+    }
+  }
+  const imageUrl = representativeImage
+    ? `http://localhost:8000${representativeImage.image_url.replace('../static', '/static')}`
     : 'https://via.placeholder.com/250';
 
   return (
@@ -45,7 +51,7 @@ const ProductItem = ({ product }) => {
             {product.trade_city} {product.trade_district}
           </p>
           <div className="product-meta">
-            <span><FaHeart /> {product.likes}</span>
+            <span><FaHeart /> {product.likes} <FaEye /> {product.views}</span>
             <span className="time-ago">{formatTimeAgo(product.created_at)}</span>
           </div>
         </div>
